@@ -11,9 +11,10 @@ import springbook.user.domain.User;
 public abstract class UserDao {
 	
 	 //공통의 기능을 담당하는 메소드로 중복된 코드를 뽑아내는 것을 리팩토링에서는 메소츠 추출 기법이라 함.
+	// template method pattern
 	 public abstract Connection getConnection() throws ClassNotFoundException, SQLException;
 
-	
+	 
 	 public void add(User user) throws  SQLException, ClassNotFoundException{
 		
 		Connection conn = getConnection(); 
@@ -29,8 +30,7 @@ public abstract class UserDao {
 		ps.close();
 		conn.close();
 	 }//end add
-
-
+	 
 	public User get(String id) throws ClassNotFoundException, SQLException{
 		
 		Connection conn = getConnection(); 
