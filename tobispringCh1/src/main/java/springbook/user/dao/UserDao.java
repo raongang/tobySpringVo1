@@ -1,23 +1,31 @@
 package springbook.user.dao;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import springbook.user.domain.User;
 
-public abstract class UserDao {
-	
-	 //공통의 기능을 담당하는 메소드로 중복된 코드를 뽑아내는 것을 리팩토링에서는 메소츠 추출 기법이라 함.
-	// template method pattern
-	 public abstract Connection getConnection() throws ClassNotFoundException, SQLException;
+/**
+DI(Dependency Injection)
+A ---- > B 
+A는 B에 의존한다.
+즉, B의 내용이 바뀌면 A에도 영향을 미친다.
+*/
 
+public class UserDao {
+	
+	private SimpleConnectionMaker simpleConnectionMaker;
+	
+	public UserDao() {
+		simpleConnectionMaker = new SimpleConnectionMaker();
+	}
+	
 	 
 	 public void add(User user) throws  SQLException, ClassNotFoundException{
 		
-		Connection conn = getConnection(); 
+		Connection conn =  simpleConnectionMaker.makeNewConnection(); 
 		
 		PreparedStatement ps = conn.prepareStatement("insert into users(id,name,password) values(?,?,?)");
 		
@@ -33,7 +41,7 @@ public abstract class UserDao {
 	 
 	public User get(String id) throws ClassNotFoundException, SQLException{
 		
-		Connection conn = getConnection(); 
+		Connection conn =  simpleConnectionMaker.makeNewConnection();  
 		
 		PreparedStatement ps = conn.prepareStatement("select * from users where id=?");
 		ps.setString(1, id);
