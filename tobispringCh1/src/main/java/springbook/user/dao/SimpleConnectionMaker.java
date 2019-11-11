@@ -9,7 +9,7 @@ public class SimpleConnectionMaker {
 	public Connection makeNewConnection() throws ClassNotFoundException, SQLException {
 
 		Class.forName("oracle.jdbc.driver.OracleDriver");
-		Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "tobi", "spring");
+		Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@192.168.3.184:1521:orcl", "tobi", "spring");
 		return conn;
 	}
 }

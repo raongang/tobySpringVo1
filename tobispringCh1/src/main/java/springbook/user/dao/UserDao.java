@@ -12,16 +12,15 @@ DI(Dependency Injection)
 A ---- > B 
 A는 B에 의존한다.
 즉, B의 내용이 바뀌면 A에도 영향을 미친다.
-*/
 
+*/
 public class UserDao {
-	
+
 	private SimpleConnectionMaker simpleConnectionMaker;
 	
-	public UserDao() {
+	public UserDao() { 
 		simpleConnectionMaker = new SimpleConnectionMaker();
 	}
-	
 	 
 	 public void add(User user) throws  SQLException, ClassNotFoundException{
 		
@@ -57,10 +56,9 @@ public class UserDao {
 		rs.close();
 		ps.close();
 		conn.close();
-		
 		return user;
+		
 	 }//end get
-	 
 	
 	/* db test
 	public static void main(String args[]) throws ClassNotFoundException, SQLException {
@@ -78,8 +76,12 @@ public class UserDao {
 		System.out.println(user2.getPassword());
 		
 		System.out.println(user.getId() + " 조회 성공");
-	}*/	
+	}
+	*/
+	
+	
 }
+
 
 
 
