@@ -17,7 +17,7 @@ public class UserDaoTest {
 	public static void main(String args[]) throws ClassNotFoundException, SQLException {
 		
 		/* 의존검색 관계를 이용하는 UserDao 생성자
-		   1.7.3 의존관계 검색과 주입
+		   1.7.3 의존관계 검색과 주입 
 				 1) 의존관계 검색
 				   - 런타임시 의존관계를 맺을 오브젝트를 결정하는 것과 오브젝트의 생성 작업은 외부 컨테이너에게 IoC로 맡기지만, 
 				     이를 가져올때는 메소드나 생성자를 통합 주입 대신 스스로 컨테이너에게 요청하는 방법을 사용한다.
