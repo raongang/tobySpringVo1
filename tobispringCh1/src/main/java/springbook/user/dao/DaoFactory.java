@@ -2,6 +2,7 @@ package springbook.user.dao;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 
 //object factory
 
@@ -23,9 +24,11 @@ public class DaoFactory {
 	
 	//팩토리의 메소드는 UserDao 타입의 오브젝트를 어떻게 만들고, 어떻게 준비시킬지를 결정한다.
 	//UserDao가 사용할 ConnectionMaker 구현 클래스를 결정하고 오브젝트를 생성.
-	
+
 	@Bean
 	public ConnectionMaker connectionMaker() {
 		return new DConnectionMaker(); 
 	}
+	
+
 }

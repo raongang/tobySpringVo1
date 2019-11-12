@@ -40,7 +40,17 @@
 		    <artifactId>cglib</artifactId>
 		    <version>3.3.0</version>
 		</dependency>
-				
+		
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc -->
+		<!-- spring이 자체적으로 가진 jdbc DataSouce를 정의할때 해당 class인 org.springframework.jdbc.datasource.DriverManagerDataSource
+		     를 사용하기 위해 spring-jdbc가 필요함
+		-->	
+		
+		<dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-jdbc</artifactId>
+		    <version>3.0.7.RELEASE</version>
+		</dependency>
 				
 		<!-- AspectJ -->
 		<dependency>
