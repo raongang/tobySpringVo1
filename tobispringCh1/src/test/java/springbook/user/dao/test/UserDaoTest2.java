@@ -14,8 +14,6 @@ public class UserDaoTest2 {
 		
 		System.out.println("dao1 >> " + dao1);
 		System.out.println("dao2 >> " + dao2);
-		
 	}
-
 }
 
