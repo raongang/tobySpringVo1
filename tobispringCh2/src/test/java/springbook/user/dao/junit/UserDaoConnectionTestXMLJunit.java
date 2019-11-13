@@ -83,6 +83,7 @@ public class UserDaoConnectionTestXMLJunit {
 		
 		dao.get("unknown_id"); //강제 예외 발생
 		
+		
 	}
 }
 
