@@ -19,6 +19,7 @@ import springbook.user.domain.User;
  *      1) 접근제어자는 public 
  *      2) return 값 void
  *      3) parameter가 없는.
+ *       
  * */
 public class UserDaoConnectionTestXMLJunit {
 	
@@ -44,7 +45,6 @@ public class UserDaoConnectionTestXMLJunit {
 		dao.add(user3);
 		assertThat(dao.getCount(),is(3));	
 	}
-	
 	
 	@Test 
 	public void addAndGetExpand() throws ClassNotFoundException, SQLException {
