@@ -17,8 +17,6 @@ public class CountingDaoFactory {
 		return userDao;
 		
 	}
-	
-	
 
 	@Bean
 	public ConnectionMaker connectionMaker() {

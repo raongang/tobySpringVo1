@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+
 import springbook.user.domain.User;
 
 /**
@@ -52,28 +54,73 @@ public class UserDao {
 		ps.close();
 		conn.close();
 	 }//end add
-
-
 	
+	 
 	public User get(String id) throws ClassNotFoundException, SQLException{
+		
+		
+		System.out.println("id >> "+ id);
+		
 		Connection conn =  connectionMaker.makeConnect();  
 		
 		PreparedStatement ps = conn.prepareStatement("select * from users where id=?");
 		ps.setString(1, id);
 		
 		ResultSet rs = ps.executeQuery();
-		rs.next();
 		
+		
+		User user = null;
+		
+		if(rs.next()) {
+			user = new User();
+			user.setId(rs.getString("id"));
+			user.setName(rs.getString("name"));
+			user.setPassword(rs.getString("password"));
+		}
+		
+		/*
 		User user = new User();
 		user.setId(rs.getString("id"));
 		user.setName(rs.getString("name"));
 		user.setPassword(rs.getString("password"));
+		*/
 		
 		rs.close();
 		ps.close();
 		conn.close();
+		
+		//예외처리
+		if(user ==null) throw new EmptyResultDataAccessException(1);
+		
+		
 		return user;
 	 }//end get
-	
 
+	
+	public void deleteAll() throws SQLException, ClassNotFoundException{
+		Connection conn = connectionMaker.makeConnect();
+		PreparedStatement ps = conn.prepareStatement("delete from users");
+		ps.execute();
+		
+		ps.close();
+		conn.close();
+	}
+	
+	public int getCount() throws SQLException, ClassNotFoundException { 
+		Connection conn = connectionMaker.makeConnect();
+		
+		PreparedStatement ps = conn.prepareStatement("select count(*) from users");
+		
+		ResultSet rs = ps.executeQuery();
+		rs.next(); //쿼리 결과의 첫번째 로우를 가져와라!
+		int count = rs.getInt(1);
+		
+		rs.close();
+		ps.close();
+		conn.close();
+		
+		return count;
+	}
+	
+	
 }

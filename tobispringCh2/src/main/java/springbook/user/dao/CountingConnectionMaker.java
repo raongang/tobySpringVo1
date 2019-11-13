@@ -23,7 +23,5 @@ public class CountingConnectionMaker implements ConnectionMaker{
 	public int getCounter() {
 		return this.counter;
 	}
-	
-	
-	
+
 }

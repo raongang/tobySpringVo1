@@ -44,8 +44,9 @@
 		<!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc -->
 		<!-- spring이 자체적으로 가진 jdbc DataSouce를 정의할때 해당 class인 org.springframework.jdbc.datasource.DriverManagerDataSource
 		     를 사용하기 위해 spring-jdbc가 필요함
-		-->	
+		-->
 		
+			
 		<dependency>
 		    <groupId>org.springframework</groupId>
 		    <artifactId>spring-jdbc</artifactId>
@@ -132,9 +133,10 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.7</version>
+			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>        
+		   
 	</dependencies>
     <build>
         <plugins>
