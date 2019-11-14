@@ -66,6 +66,7 @@ public class UserDaoConnectionTestXMLJunit {
 	public void addAndGet() throws SQLException, ClassNotFoundException{ //Jnit 테스트위해 접근제어자를 public으로..)
 		
 		dao.deleteAll();
+		
 		assertThat(dao.getCount(),is(0));
 		
 		dao.add(user1);
@@ -75,7 +76,8 @@ public class UserDaoConnectionTestXMLJunit {
 		assertThat(dao.getCount(),is(2));		
 		
 		dao.add(user3);
-		assertThat(dao.getCount(),is(3));	
+		assertThat(dao.getCount(),is(3));
+			
 	}
 	
 	@Test 
@@ -101,10 +103,10 @@ public class UserDaoConnectionTestXMLJunit {
 	@Test(expected=EmptyResultDataAccessException.class)   //테스트중에 발생할 것으로 기대하는 예외 클래스를 지정
 	public void getUserFailure() throws SQLException, ClassNotFoundException{
 		dao.deleteAll();
+		System.out.println("dao.getCount() >> " + dao.getCount());
 		assertThat(dao.getCount(),is(0));
 		dao.get("unknown_id"); //강제 예외 발생
 	}
-	
 	
 	
 }

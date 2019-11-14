@@ -41,23 +41,11 @@ public class UserDao {
 	}
 	
 	 public void add(User user) throws  SQLException, ClassNotFoundException{
-		
-		Connection conn =  connectionMaker.makeConnect(); 
-		PreparedStatement ps = conn.prepareStatement("insert into users(id,name,password) values(?,?,?)");
-		
-		ps.setString(1, user.getId());
-		ps.setString(2, user.getName()); 
-		ps.setString(3, user.getPassword());
-		
-		ps.executeUpdate();
-		
-		ps.close();
-		conn.close();
+			StatementStrategy st = new AddStatement(user); //선정한 전략 클래스 오브젝트 생성
+			jdbcContextWithStatementStrategy(st); //컨텍스트호출, 전략오브젝트 전달.
 	 }//end add
-	
 	 
 	public User get(String id) throws ClassNotFoundException, SQLException{
-		
 		
 		System.out.println("id >> "+ id);
 		
@@ -67,7 +55,6 @@ public class UserDao {
 		ps.setString(1, id);
 		
 		ResultSet rs = ps.executeQuery();
-		
 		
 		User user = null;
 		
@@ -92,35 +79,70 @@ public class UserDao {
 		//예외처리
 		if(user ==null) throw new EmptyResultDataAccessException(1);
 		
-		
 		return user;
 	 }//end get
 
 	
+	//client부분.
 	public void deleteAll() throws SQLException, ClassNotFoundException{
-		Connection conn = connectionMaker.makeConnect();
-		PreparedStatement ps = conn.prepareStatement("delete from users");
-		ps.execute();
-		
-		ps.close();
-		conn.close();
+		StatementStrategy st = new DeleteAllStatement(); //선정한 전략 클래스 오브젝트 생성
+		jdbcContextWithStatementStrategy(st); //컨텍스트호출, 전략오브젝트 전달.
 	}
+	
+	/* deleteAll 변형부분.
+	 context 부분을 분리
+	 StatementStrategy - client가 context호출할때 넘겨준 파라미터
+	*/
+	public void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException, ClassNotFoundException{
+		Connection conn = null;
+		PreparedStatement ps = null;
+		
+		try {
+			conn = connectionMaker.makeConnect();
+			ps = stmt.makePreparedStatement(conn);
+			ps.executeUpdate();
+		
+		}catch(SQLException e ) {
+			throw e;
+		}finally {
+			if(ps!=null)   {  try { ps.close(); }catch(SQLException e) {}  }
+			if(conn!=null) {  try { conn.close();}catch(SQLException e){}  }
+		}
+	}
+
 	
 	public int getCount() throws SQLException, ClassNotFoundException { 
-		Connection conn = connectionMaker.makeConnect();
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
 		
-		PreparedStatement ps = conn.prepareStatement("select count(*) from users");
-		
-		ResultSet rs = ps.executeQuery();
-		rs.next(); //쿼리 결과의 첫번째 로우를 가져와라!
-		int count = rs.getInt(1);
-		
-		rs.close();
-		ps.close();
-		conn.close();
-		
-		return count;
+		try {
+			conn = connectionMaker.makeConnect();
+			ps = conn.prepareStatement("select count(*) from users");
+			
+			rs = ps.executeQuery();
+			rs.next(); //쿼리 결과의 첫번째 로우를 가져와라!
+			return rs.getInt(1);
+		}catch(SQLException e) {
+			throw e;
+		}finally {
+			if(rs!=null) {
+				try {
+					rs.close();
+				}catch(SQLException e) {}
+			}
+			
+			if(ps!=null) {
+				try {
+					ps.close();
+				}catch(SQLException e) {}
+			}
+			
+			if(conn!=null) {
+				try {
+					conn.close();
+				}catch(SQLException e) {}
+			}
+		}//end finally
 	}
-	
-	
-}
+}//end class
