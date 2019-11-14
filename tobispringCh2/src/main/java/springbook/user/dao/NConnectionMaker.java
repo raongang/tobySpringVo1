@@ -12,4 +12,6 @@ public class NConnectionMaker implements ConnectionMaker{
 		Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@192.168.3.184:1521:orcl", "tobi", "spring");
 		return conn;
 	}
+	
+	
 }
