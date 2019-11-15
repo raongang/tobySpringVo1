@@ -59,12 +59,8 @@ public class UserDao {
 	 }//end add
 	 
 	public User get(String id) throws ClassNotFoundException, SQLException{
-		
-		System.out.println("id >> "+ id);
-		
-		//Connection conn =  connectionMaker.makeConnect();  
+	
 		Connection conn = dataSource.getConnection();
-		
 		
 		PreparedStatement ps = conn.prepareStatement("select * from users where id=?");
 		ps.setString(1, id);
@@ -121,7 +117,6 @@ public class UserDao {
 		PreparedStatement ps = null;
 		
 		try {
-			//conn = connectionMaker.makeConnect();
 			conn = dataSource.getConnection();
 			ps = stmt.makePreparedStatement(conn);
 			ps.executeUpdate();
@@ -140,7 +135,6 @@ public class UserDao {
 		ResultSet rs = null;
 		
 		try {
-			//conn = connectionMaker.makeConnect();
 			conn = dataSource.getConnection();
 			ps = conn.prepareStatement("select count(*) from users");
 			
