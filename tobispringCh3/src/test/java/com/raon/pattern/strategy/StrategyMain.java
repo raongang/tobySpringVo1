@@ -1,4 +1,4 @@
-package com.raon.pattern;
+package com.raon.pattern.strategy;
 
 /**
  * 전략패턴(Strategy pattern) 구성

@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -41,9 +41,11 @@ public class UserDaoConnectionTestXMLJunit {
 	@Autowired
 	private UserDao dao;
 	
+	
 	//Junit이 제공하는 어노테이션 ( @Test가 실행되기전에 먼저 실행되어야 할 메소드를 정의한다 ) 
 	@Before
 	public void setUp() {
+		
 		
 		/**
 		 *   this.context 
@@ -79,7 +81,7 @@ public class UserDaoConnectionTestXMLJunit {
 		assertThat(dao.getCount(),is(3));
 			
 	}
-	
+	/**
 	@Test 
 	public void addAndGetExpand() throws ClassNotFoundException, SQLException {
 		
@@ -107,6 +109,8 @@ public class UserDaoConnectionTestXMLJunit {
 		assertThat(dao.getCount(),is(0));
 		dao.get("unknown_id"); //강제 예외 발생
 	}
+	*/
 	
+
 	
 }

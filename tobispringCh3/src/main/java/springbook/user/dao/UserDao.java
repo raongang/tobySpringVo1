@@ -5,6 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import springbook.user.domain.User;
@@ -28,28 +31,40 @@ public class UserDao {
 	private User user;
 	*/
 	
-	private ConnectionMaker connectionMaker;  //읽기전용
-	
-	/* 생성자 DI방식
-	public UserDao(ConnectionMaker connectionMaker) { //의존관계주입
-		this.connectionMaker = connectionMaker;
-	}*/
-	
-	//수정자(setter 방식)
-	public void setConnectionMaker(ConnectionMaker connectionMaker) {
-		this.connectionMaker = connectionMaker;
+	/** dataSource di 시 주의사항 
+	 *    - setter 주입시 대소문자로 구분하므로 변수명을 datasource로 작성하면 안됨.
+	*/
+	public DataSource dataSource;
+
+	public void setDataSource(DataSource dataSource) {
+		this.dataSource = dataSource;
 	}
-	
-	 public void add(User user) throws  SQLException, ClassNotFoundException{
-			StatementStrategy st = new AddStatement(user); //선정한 전략 클래스 오브젝트 생성
-			jdbcContextWithStatementStrategy(st); //컨텍스트호출, 전략오브젝트 전달.
+
+	public void add(final User user) throws  SQLException, ClassNotFoundException{
+		 	
+		 	//익명 내부 클래스 -> 구현하는 인터페이스를 생성자처럼 이용하여 오브젝트를 만든다.
+		 jdbcContextWithStatementStrategy(new StatementStrategy() {
+				public PreparedStatement makePreparedStatement(Connection conn) throws SQLException {
+					// TODO Auto-generated method stub
+					
+					PreparedStatement ps = conn.prepareStatement("insert into users(id,name,password) values(?,?,?)");
+					ps.setString(1, user.getId());
+					ps.setString(2, user.getName()); 
+					ps.setString(3, user.getPassword());
+					return ps;
+				
+				}
+		 	}
+		 );
 	 }//end add
 	 
 	public User get(String id) throws ClassNotFoundException, SQLException{
 		
 		System.out.println("id >> "+ id);
 		
-		Connection conn =  connectionMaker.makeConnect();  
+		//Connection conn =  connectionMaker.makeConnect();  
+		Connection conn = dataSource.getConnection();
+		
 		
 		PreparedStatement ps = conn.prepareStatement("select * from users where id=?");
 		ps.setString(1, id);
@@ -85,8 +100,16 @@ public class UserDao {
 	
 	//client부분.
 	public void deleteAll() throws SQLException, ClassNotFoundException{
-		StatementStrategy st = new DeleteAllStatement(); //선정한 전략 클래스 오브젝트 생성
-		jdbcContextWithStatementStrategy(st); //컨텍스트호출, 전략오브젝트 전달.
+		
+		jdbcContextWithStatementStrategy (
+				new StatementStrategy() {
+					@Override
+					public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
+						// TODO Auto-generated method stub
+						return c.prepareStatement("delete from users");
+					}
+				}
+         );
 	}
 	
 	/* deleteAll 변형부분.
@@ -98,7 +121,8 @@ public class UserDao {
 		PreparedStatement ps = null;
 		
 		try {
-			conn = connectionMaker.makeConnect();
+			//conn = connectionMaker.makeConnect();
+			conn = dataSource.getConnection();
 			ps = stmt.makePreparedStatement(conn);
 			ps.executeUpdate();
 		
@@ -110,14 +134,14 @@ public class UserDao {
 		}
 	}
 
-	
 	public int getCount() throws SQLException, ClassNotFoundException { 
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		
 		try {
-			conn = connectionMaker.makeConnect();
+			//conn = connectionMaker.makeConnect();
+			conn = dataSource.getConnection();
 			ps = conn.prepareStatement("select count(*) from users");
 			
 			rs = ps.executeQuery();

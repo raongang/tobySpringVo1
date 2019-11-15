@@ -1,4 +1,4 @@
-package com.raon.pattern;
+package com.raon.pattern.strategy;
 
 
 public class CupSeller implements Seller{
