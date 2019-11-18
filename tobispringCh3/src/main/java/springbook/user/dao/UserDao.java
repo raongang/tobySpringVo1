@@ -31,25 +31,28 @@ public class UserDao {
 	private User user;
 	*/
 	
+	private JdbcContext jdbcContext;
+	
 	/** dataSource di 시 주의사항 
 	 *    - setter 주입시 대소문자로 구분하므로 변수명을 datasource로 작성하면 안됨.
 	*/
 	public DataSource dataSource;
 
 	public void setDataSource(DataSource dataSource) {
+		//수동 DI
+		this.jdbcContext = new JdbcContext();
 		this.dataSource = dataSource;
+		this.jdbcContext.setDataSource(dataSource);
 	}
+
 	
-
-	//DI 
-	private JdbcContext jdbcContext;
-
-	public void setJdbcContext(JdbcContext jdbcContext) {
-		this.jdbcContext = jdbcContext;
-	}
-
+	/**  템플릿,콜백 패턴 
+	 *    - add 메소드 : Client
+	 *    - StatementStrategy : callback
+	 *    - jdbcContext.workWithStatementStrategy : template
+	 */
 	public void add(final User user) throws  SQLException, ClassNotFoundException{
-		
+
 		this.jdbcContext.workWithStatementStrategy(new StatementStrategy() {
 			public PreparedStatement makePreparedStatement(Connection conn) throws SQLException {
 				// TODO Auto-generated method stub
@@ -92,6 +95,7 @@ public class UserDao {
 		//예외처리
 		if(user ==null) throw new EmptyResultDataAccessException(1);
 		return user;
+		
 	 }//end get
 	
 	//client부분.
@@ -161,3 +165,4 @@ public class UserDao {
 		}//end finally
 	}
 }//end class
+
