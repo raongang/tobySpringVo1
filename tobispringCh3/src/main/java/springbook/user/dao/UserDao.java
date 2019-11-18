@@ -39,34 +39,36 @@ public class UserDao {
 	public void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;
 	}
+	
+
+	//DI 
+	private JdbcContext jdbcContext;
+
+	public void setJdbcContext(JdbcContext jdbcContext) {
+		this.jdbcContext = jdbcContext;
+	}
 
 	public void add(final User user) throws  SQLException, ClassNotFoundException{
-		 	
-		 	//익명 내부 클래스 -> 구현하는 인터페이스를 생성자처럼 이용하여 오브젝트를 만든다.
-		 jdbcContextWithStatementStrategy(new StatementStrategy() {
-				public PreparedStatement makePreparedStatement(Connection conn) throws SQLException {
-					// TODO Auto-generated method stub
-					
-					PreparedStatement ps = conn.prepareStatement("insert into users(id,name,password) values(?,?,?)");
-					ps.setString(1, user.getId());
-					ps.setString(2, user.getName()); 
-					ps.setString(3, user.getPassword());
-					return ps;
-				
-				}
-		 	}
-		 );
+		
+		this.jdbcContext.workWithStatementStrategy(new StatementStrategy() {
+			public PreparedStatement makePreparedStatement(Connection conn) throws SQLException {
+				// TODO Auto-generated method stub
+				PreparedStatement ps = conn.prepareStatement("insert into users(id,name,password) values(?,?,?)");
+				ps.setString(1, user.getId());
+				ps.setString(2, user.getName()); 
+				ps.setString(3, user.getPassword());
+				return ps;
+			}
+	 	});
+		
 	 }//end add
 	 
 	public User get(String id) throws ClassNotFoundException, SQLException{
-	
 		Connection conn = dataSource.getConnection();
-		
 		PreparedStatement ps = conn.prepareStatement("select * from users where id=?");
 		ps.setString(1, id);
 		
 		ResultSet rs = ps.executeQuery();
-		
 		User user = null;
 		
 		if(rs.next()) {
@@ -89,23 +91,18 @@ public class UserDao {
 		
 		//예외처리
 		if(user ==null) throw new EmptyResultDataAccessException(1);
-		
 		return user;
 	 }//end get
-
 	
 	//client부분.
 	public void deleteAll() throws SQLException, ClassNotFoundException{
-		
-		jdbcContextWithStatementStrategy (
-				new StatementStrategy() {
-					@Override
-					public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
-						// TODO Auto-generated method stub
-						return c.prepareStatement("delete from users");
-					}
-				}
-         );
+		this.jdbcContext.workWithStatementStrategy(new StatementStrategy() {
+			@Override
+			public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
+				// TODO Auto-generated method stub
+				return c.prepareStatement("delete from users");
+			}
+		});
 	}
 	
 	/* deleteAll 변형부분.
@@ -128,7 +125,7 @@ public class UserDao {
 			if(conn!=null) {  try { conn.close();}catch(SQLException e){}  }
 		}
 	}
-
+	
 	public int getCount() throws SQLException, ClassNotFoundException { 
 		Connection conn = null;
 		PreparedStatement ps = null;
