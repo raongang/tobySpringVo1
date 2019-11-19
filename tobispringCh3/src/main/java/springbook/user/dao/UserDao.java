@@ -81,6 +81,8 @@ public class UserDao {
 			user.setPassword(rs.getString("password"));
 		}
 		
+
+		
 		/*
 		User user = new User();
 		user.setId(rs.getString("id"));
