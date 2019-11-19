@@ -44,7 +44,6 @@ public class UserDao {
 		this.dataSource = dataSource;
 		this.jdbcContext.setDataSource(dataSource);
 	}
-
 	
 	/**  템플릿,콜백 패턴 
 	 *    - add 메소드 : Client
@@ -80,9 +79,6 @@ public class UserDao {
 			user.setName(rs.getString("name"));
 			user.setPassword(rs.getString("password"));
 		}
-		
-
-		
 		/*
 		User user = new User();
 		user.setId(rs.getString("id"));
@@ -109,27 +105,6 @@ public class UserDao {
 				return c.prepareStatement("delete from users");
 			}
 		});
-	}
-	
-	/* deleteAll 변형부분.
-	 context 부분을 분리
-	 StatementStrategy - client가 context호출할때 넘겨준 파라미터
-	*/
-	public void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException, ClassNotFoundException{
-		Connection conn = null;
-		PreparedStatement ps = null;
-		
-		try {
-			conn = dataSource.getConnection();
-			ps = stmt.makePreparedStatement(conn);
-			ps.executeUpdate();
-		
-		}catch(SQLException e ) {
-			throw e;
-		}finally {
-			if(ps!=null)   {  try { ps.close(); }catch(SQLException e) {}  }
-			if(conn!=null) {  try { conn.close();}catch(SQLException e){}  }
-		}
 	}
 	
 	public int getCount() throws SQLException, ClassNotFoundException { 
