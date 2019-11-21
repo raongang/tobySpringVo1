@@ -70,11 +70,12 @@ public class UserDaoConnectionTestXMLJunit {
 		
 		dao.deleteAll();
 		
+		
 		assertThat(dao.getCount(),is(0));
 		
 		dao.add(user1);
 		assertThat(dao.getCount(),is(1));
-		
+	
 		dao.add(user2);
 		assertThat(dao.getCount(),is(2));		
 		
@@ -83,6 +84,7 @@ public class UserDaoConnectionTestXMLJunit {
 			
 	}
 
+	
 	@Test 
 	public void addAndGetExpand() throws ClassNotFoundException, SQLException {
 		

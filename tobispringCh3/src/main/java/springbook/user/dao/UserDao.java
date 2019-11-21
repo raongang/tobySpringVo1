@@ -7,7 +7,6 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import springbook.user.domain.User;
@@ -30,11 +29,12 @@ public class UserDao {
 	private Connection c;
 	private User user;
 	*/
-	
+
 	private JdbcContext jdbcContext;
 	
 	/** dataSource di 시 주의사항 
 	 *    - setter 주입시 대소문자로 구분하므로 변수명을 datasource로 작성하면 안됨.
+	 *    
 	*/
 	public DataSource dataSource;
 
@@ -52,6 +52,14 @@ public class UserDao {
 	 */
 	public void add(final User user) throws  SQLException, ClassNotFoundException{
 
+		//가변인자로 넘기기 ( jdk1.5 부터 가능 ) 
+		this.jdbcContext.executeSql("insert into users(id,name,password) values(?,?,?)", 
+									user.getId(),
+									user.getName(),
+									user.getPassword()
+								   );
+		
+		/*
 		this.jdbcContext.workWithStatementStrategy(new StatementStrategy() {
 			public PreparedStatement makePreparedStatement(Connection conn) throws SQLException {
 				// TODO Auto-generated method stub
@@ -61,7 +69,7 @@ public class UserDao {
 				ps.setString(3, user.getPassword());
 				return ps;
 			}
-	 	});
+	 	});*/
 		
 	 }//end add
 	 
@@ -95,16 +103,9 @@ public class UserDao {
 		return user;
 		
 	 }//end get
-	
-	//client부분.
+
 	public void deleteAll() throws SQLException, ClassNotFoundException{
-		this.jdbcContext.workWithStatementStrategy(new StatementStrategy() {
-			@Override
-			public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
-				// TODO Auto-generated method stub
-				return c.prepareStatement("delete from users");
-			}
-		});
+		this.jdbcContext.executeSql("delete from users");
 	}
 	
 	public int getCount() throws SQLException, ClassNotFoundException { 
