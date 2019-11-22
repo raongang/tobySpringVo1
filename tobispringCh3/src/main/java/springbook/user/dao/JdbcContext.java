@@ -42,10 +42,8 @@ public class JdbcContext {
 					}
 				},strs);
 	}
-
 	
 	public void workWithStatementStrategy(StatementStrategy stmt, String ...strs) throws SQLException{
-		
 		Connection c = null;
 		PreparedStatement ps = null;
 		
@@ -59,13 +57,12 @@ public class JdbcContext {
 					ps.setString(i+1,strs[i]);
 				}
 			}
-			
 			ps.executeUpdate();
 		}catch(SQLException e) {
 			throw e;
 		}finally {
-			if(ps!=null)   {  try { ps.close(); }catch(SQLException e) {}  }
-			if(c!=null) {  try { c.close();}catch(SQLException e){}  }
+			if(ps!=null){  try { ps.close(); }catch(SQLException e){}}
+			if(c!=null) {  try { c.close();}catch(SQLException e){}}
 		}
 	}
 	
