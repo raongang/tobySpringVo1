@@ -13,7 +13,7 @@
 	
 	<!-- DI  -->
 	<bean id="userDao" class="springbook.user.dao.UserDao">
-		<property name="dataSource" ref="dataSource" />
+		<property name="jdbcTemplate" ref="dataSource" />
 	</bean>
 	
 	<!-- DataSource 설정 -->

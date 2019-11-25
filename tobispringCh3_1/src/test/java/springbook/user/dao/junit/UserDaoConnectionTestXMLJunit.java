@@ -3,7 +3,9 @@ package springbook.user.dao.junit;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+
 import java.sql.SQLException;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -11,7 +13,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -42,7 +43,6 @@ public class UserDaoConnectionTestXMLJunit {
 	@Autowired
 	private UserDao dao;
 	
-	
 	//Junit이 제공하는 어노테이션 ( @Test가 실행되기전에 먼저 실행되어야 할 메소드를 정의한다 ) 
 	@Before
 	public void setUp() {
@@ -60,17 +60,14 @@ public class UserDaoConnectionTestXMLJunit {
 		System.out.println("======================== this ======================== " + this);
 		
 		//this.dao = this.context.getBean("userDao",UserDao.class);
-		this.user1 = new User("whiteship","tom","married"); //픽스처
-		this.user2 = new User("whiteship2","tom2","married2"); 
-		this.user3 = new User("whiteship3","tom3","married3");
+		this.user1 = new User("abc","tom","married"); //픽스처
+		this.user2 = new User("bcd","tom2","married2"); 
+		this.user3 = new User("cde","tom3","married3");
 	}
 	
 	@Test
 	public void addAndGet() throws SQLException, ClassNotFoundException{ //Jnit 테스트위해 접근제어자를 public으로..)
-		
 		dao.deleteAll();
-		
-		
 		assertThat(dao.getCount(),is(0));
 		
 		dao.add(user1);
@@ -111,6 +108,44 @@ public class UserDaoConnectionTestXMLJunit {
 		System.out.println("dao.getCount() >> " + dao.getCount());
 		assertThat(dao.getCount(),is(0));
 		dao.get("unknown_id"); //강제 예외 발생
+	}
+	
+	/**
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 */
+	@Test
+	public void getAll() throws ClassNotFoundException, SQLException {
+		dao.deleteAll();
+		
+		List<User> users0 = dao.getAll();
+		assertThat(users0.size(),is(0));
+		
+		dao.add(user1);
+		List<User> users1 = dao.getAll();
+		assertThat(users1.size(),is(1));
+		checkSumUser(user1,users1.get(0));		
+		
+		dao.add(user2);
+		List<User> users2 = dao.getAll();
+		assertThat(users2.size(),is(2));
+		checkSumUser(user1,users2.get(0));		
+		checkSumUser(user2,users2.get(1));		
+		
+		dao.add(user3);
+		List<User> users3 = dao.getAll();
+		assertThat(users3.size(),is(3));
+		checkSumUser(user1,users3.get(0));		
+		checkSumUser(user2,users3.get(1));				
+		checkSumUser(user3,users3.get(2));		
+		
+	}
+	
+	@SuppressWarnings("unused")
+	private void checkSumUser(User user1, User user2) {
+		assertThat(user1.getId(),is(user2.getId()));
+		assertThat(user1.getName(),is(user2.getName()));
+		assertThat(user1.getPassword(),is(user2.getPassword()));
 	}
 
 	

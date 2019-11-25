@@ -1,13 +1,13 @@
 package springbook.user.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 
 import springbook.user.domain.User;
 
@@ -25,24 +25,30 @@ public class UserDao {
 	 *  1) 멀티 스레드 환경에서 기본적으로 인스턴스 필드 값을 변경하고 유지하는 상태유지(stateful)방식으로 만들지 않는다.
 	    2) 아래와 같이 선언하면 멀티스레드 환경에서 매번 새로운 값으로 바뀌기 때문에 심각한 문제가 발생
 	        - 파라미터와 로컬변수, 리턴값을 이용하면 새로운 값을 저장할 독립적인 공간이 만들어지기 때문에 싱글톤이라고 해도 여러 스레드가 변수를 덮어쓰지 않음.
-	        
+	
 	private Connection c;
 	private User user;
 	*/
 
-	private JdbcContext jdbcContext;
+	// RowMapper callback 오브젝트에는 상태정보가 없기 때문에, 멀티 쓰레드에서 문제가 되지 않는다.
+	private RowMapper<User> userMapper = 
+		new RowMapper<User>() {
+			public User mapRow(ResultSet rs, int rowNum) throws SQLException{
+				User user = new User();
+				user.setId(rs.getString("id"));
+				user.setName(rs.getString("name"));
+				user.setPassword(rs.getString("password"));
+				return user;
+			}
+	};
 	
-	/** dataSource di 시 주의사항 
-	 *    - setter 주입시 대소문자로 구분하므로 변수명을 datasource로 작성하면 안됨.
-	 *    
-	*/
-	public DataSource dataSource;
+	
+	//spring이 제공하는 template
+	private JdbcTemplate jdbcTemplate;
 
-	public void setDataSource(DataSource dataSource) {
+	public void setJdbcTemplate(DataSource dataSource) {
 		//수동 DI
-		this.jdbcContext = new JdbcContext();
-		this.dataSource = dataSource;
-		this.jdbcContext.setDataSource(dataSource);
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
 	
 	/**  템플릿,콜백 패턴 
@@ -51,96 +57,74 @@ public class UserDao {
 	 *    - jdbcContext.workWithStatementStrategy : template
 	 */
 	public void add(final User user) throws  SQLException, ClassNotFoundException{
-
-		//가변인자로 넘기기 ( jdk1.5 부터 가능 ) 
-		this.jdbcContext.executeSql("insert into users(id,name,password) values(?,?,?)", 
-									user.getId(),
-									user.getName(),
-									user.getPassword()
-								   );
-		
-		/*
-		this.jdbcContext.workWithStatementStrategy(new StatementStrategy() {
-			public PreparedStatement makePreparedStatement(Connection conn) throws SQLException {
-				// TODO Auto-generated method stub
-				PreparedStatement ps = conn.prepareStatement("insert into users(id,name,password) values(?,?,?)");
-				ps.setString(1, user.getId());
-				ps.setString(2, user.getName()); 
-				ps.setString(3, user.getPassword());
-				return ps;
-			}
-	 	});*/
-		
+		this.jdbcTemplate.update("insert into users(id,name,password) values(?,?,?)", user.getId(),user.getName(),user.getPassword());
 	 }//end add
 	 
-	public User get(String id) throws ClassNotFoundException, SQLException{
-		Connection conn = dataSource.getConnection();
-		PreparedStatement ps = conn.prepareStatement("select * from users where id=?");
-		ps.setString(1, id);
+	
+	// queryForObject 의 조회결과가 없을 경우 예외처리가 자동으로 됨.
+	// EmptyResultDataAccessException
+	public User get(String id) throws ClassNotFoundException, SQLException{ //row 1번 조회
 		
-		ResultSet rs = ps.executeQuery();
-		User user = null;
-		
-		if(rs.next()) {
-			user = new User();
-			user.setId(rs.getString("id"));
-			user.setName(rs.getString("name"));
-			user.setPassword(rs.getString("password"));
-		}
-		/*
-		User user = new User();
-		user.setId(rs.getString("id"));
-		user.setName(rs.getString("name"));
-		user.setPassword(rs.getString("password"));
-		*/
-		
-		rs.close();
-		ps.close();
-		conn.close();
-		
-		//예외처리
-		if(user ==null) throw new EmptyResultDataAccessException(1);
-		return user;
-		
+		/**
+		 * ResultSetExtractor callback vs RowMapper callback
+		 * 
+		 * 1. 공통점 
+		 *   - template로부터 ResultSet을 전달받고, 필요한 정보를 추출해서 리턴 하는 방식으로 동작
+		 * 2. 차이점
+		 *   - ResultSetExtractor 은 ResultSet을 한번 전달 받아서 알아서 추출작업을 모두 진행하고 최종 결과만 리턴
+		 *   - RowMapper 는 ResultSet의 로우 하나를 매핑하기 위해 사용되므로 여러번 호출될 수 잇다.
+		 */
+		//sql에 바인딩할 파라미터 값, 가변인자 대신 배열이용
+		return this.jdbcTemplate.queryForObject("select * from users where id=?", new Object[] {id},  this.userMapper);
 	 }//end get
+	
 
-	public void deleteAll() throws SQLException, ClassNotFoundException{
-		this.jdbcContext.executeSql("delete from users");
+	/** 
+	 * 현재 등록된 모든 사용자를 가져오기.
+	 * query return type >> List<T>
+	 *   - 결과값이 없을때 ?  크기가 0인 List<T> 가 반환된다.
+	 * 
+	 * @return
+	 */
+	public List<User> getAll(){
+		return this.jdbcTemplate.query("SELECT * FROM USERS ORDER BY ID", this.userMapper);
 	}
 	
-	public int getCount() throws SQLException, ClassNotFoundException { 
-		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
+	public void deleteAll() throws SQLException, ClassNotFoundException{
+			/*
+			this.jdbcTemplate.update( new PreparedStatementCreator() {
+				@Override
+				public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+					return con.prepareStatement("delete from users");
+				}
+			}
+		);*/
 		
-		try {
-			conn = dataSource.getConnection();
-			ps = conn.prepareStatement("select count(*) from users");
-			
-			rs = ps.executeQuery();
-			rs.next(); //쿼리 결과의 첫번째 로우를 가져와라!
-			return rs.getInt(1);
-		}catch(SQLException e) {
-			throw e;
-		}finally {
-			if(rs!=null) {
-				try {
-					rs.close();
-				}catch(SQLException e) {}
-			}
-			
-			if(ps!=null) {
-				try {
-					ps.close();
-				}catch(SQLException e) {}
-			}
-			
-			if(conn!=null) {
-				try {
-					conn.close();
-				}catch(SQLException e) {}
-			}
-		}//end finally
+		//내장콜백호출.
+		this.jdbcTemplate.update("delete from users");
 	}
+	
+	
+	public int getCount() throws SQLException, ClassNotFoundException {
+		
+		/*
+		return this.jdbcTemplate.query(new PreparedStatementCreator() { //첫 번째 callback Statement create
+			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+				// TODO Auto-generated method stub
+				return con.prepareStatement("select count(*) from users");
+			}
+		}, new ResultSetExtractor<Integer>() {  //두번쨰 콜백 ResultSet으로부터 값 추출
+			public Integer extractData(ResultSet rs) throws SQLException, DataAccessException{
+				rs.next();
+				return rs.getInt(1);
+			}
+		});*/
+		
+		return this.jdbcTemplate.queryForObject("select count(*) from users",Integer.class);
+		
+		
+		
+	}//end getCount method 
+	
 }//end class
 
