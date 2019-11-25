@@ -50,7 +50,7 @@ public class JdbcContext {
 		try {
 			c = this.dataSource.getConnection();
 			ps = stmt.makePreparedStatement(c);
-			
+			 
 			if(!ArrayUtils.isEmpty(strs)) { //파라미터가 있으면 insert로..
 				for(int i=0; i<strs.length;i++) {
 					System.out.println("strs["+i+"] >> " + strs[i]);
