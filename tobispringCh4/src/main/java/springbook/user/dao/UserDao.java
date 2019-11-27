@@ -42,7 +42,6 @@ public class UserDao {
 			}
 	};
 	
-	
 	//spring이 제공하는 template
 	private JdbcTemplate jdbcTemplate;
 
@@ -51,19 +50,21 @@ public class UserDao {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
 	
+	
+	
 	/**  템플릿,콜백 패턴 
 	 *    - add 메소드 : Client
 	 *    - StatementStrategy : callback
 	 *    - jdbcContext.workWithStatementStrategy : template
 	 */
-	public void add(final User user) throws  SQLException, ClassNotFoundException{
+	public void add(final User user){
 		this.jdbcTemplate.update("insert into users(id,name,password) values(?,?,?)", user.getId(),user.getName(),user.getPassword());
 	 }//end add
 	 
 	
 	// queryForObject 의 조회결과가 없을 경우 예외처리가 자동으로 됨.
 	// EmptyResultDataAccessException
-	public User get(String id) throws ClassNotFoundException, SQLException{ //row 1번 조회
+	public User get(String id){ //row 1번 조회
 		
 		/**
 		 * ResultSetExtractor callback vs RowMapper callback
@@ -90,23 +91,20 @@ public class UserDao {
 		return this.jdbcTemplate.query("SELECT * FROM USERS ORDER BY ID", this.userMapper);
 	}
 	
-	public void deleteAll() throws SQLException, ClassNotFoundException{
+	public void deleteAll(){
 			/*
 			this.jdbcTemplate.update( new PreparedStatementCreator() {
 				@Override
 				public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 					return con.prepareStatement("delete from users");
 				}
-			}
-		);*/
+			});*/
 		
 		//내장콜백호출.
 		this.jdbcTemplate.update("delete from users");
 	}
 	
-	
-	public int getCount() throws SQLException, ClassNotFoundException {
-		
+	public int getCount(){
 		/*
 		return this.jdbcTemplate.query(new PreparedStatementCreator() { //첫 번째 callback Statement create
 			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
@@ -121,9 +119,6 @@ public class UserDao {
 		});*/
 		
 		return this.jdbcTemplate.queryForObject("select count(*) from users",Integer.class);
-		
-		
-		
 	}//end getCount method 
 	
 }//end class
