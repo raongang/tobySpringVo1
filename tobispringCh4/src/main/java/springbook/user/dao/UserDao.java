@@ -9,7 +9,10 @@ import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
+import com.mysql.jdbc.MysqlErrorNumbers;
+
 import springbook.user.domain.User;
+import springbook.user.exception.DuplicateUserIdException;
 
 /**
 DI(Dependency Injection)
@@ -29,7 +32,6 @@ public class UserDao {
 	private Connection c;
 	private User user;
 	*/
-
 	// RowMapper callback 오브젝트에는 상태정보가 없기 때문에, 멀티 쓰레드에서 문제가 되지 않는다.
 	private RowMapper<User> userMapper = 
 		new RowMapper<User>() {
@@ -44,82 +46,62 @@ public class UserDao {
 	
 	//spring이 제공하는 template
 	private JdbcTemplate jdbcTemplate;
-
 	public void setJdbcTemplate(DataSource dataSource) {
 		//수동 DI
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
-	
-	
 	
 	/**  템플릿,콜백 패턴 
 	 *    - add 메소드 : Client
 	 *    - StatementStrategy : callback
 	 *    - jdbcContext.workWithStatementStrategy : template
 	 */
-	public void add(final User user){
-		this.jdbcTemplate.update("insert into users(id,name,password) values(?,?,?)", user.getId(),user.getName(),user.getPassword());
-	 }//end add
-	 
-	
-	// queryForObject 의 조회결과가 없을 경우 예외처리가 자동으로 됨.
-	// EmptyResultDataAccessException
-	public User get(String id){ //row 1번 조회
+	public void add(final User user) throws DuplicateUserIdException{
 		
-		/**
-		 * ResultSetExtractor callback vs RowMapper callback
-		 * 
-		 * 1. 공통점 
-		 *   - template로부터 ResultSet을 전달받고, 필요한 정보를 추출해서 리턴 하는 방식으로 동작
-		 * 2. 차이점
-		 *   - ResultSetExtractor 은 ResultSet을 한번 전달 받아서 알아서 추출작업을 모두 진행하고 최종 결과만 리턴
-		 *   - RowMapper 는 ResultSet의 로우 하나를 매핑하기 위해 사용되므로 여러번 호출될 수 잇다.
-		 */
+		this.jdbcTemplate.update("insert into users(id,name,password) values(?,?,?)", user.getId(),user.getName(),user.getPassword());	
+		
+		/*
+		try {
+		   //JDBC를 이용한 user 정보를 DB에 추가하는 코드 또는 그런 가능성이 있는 다른  SQLException을 던지는 메소드를 호출하는 코드.
+			throw new SQLException("test");
+		}catch(SQLException e){
+			System.out.println("e.getErrorCode() >> " + e.getErrorCode());
+			if(e.getErrorCode() == MysqlErrorNumbers.ER_DUP_ENTRY)  
+				throw new DuplicateUserIdException(e) ; //예외 전환
+			else 
+				throw new RuntimeException(e); //예외 포장
+		}*/
+		
+	 }//end add
+	
+	// queryForObject 의 조회결과가 없을 경우 예외처리가 자동으로 됨 / EmptyResultDataAccessException
+	public User get(String id){ //row 1번 조회
 		//sql에 바인딩할 파라미터 값, 가변인자 대신 배열이용
 		return this.jdbcTemplate.queryForObject("select * from users where id=?", new Object[] {id},  this.userMapper);
 	 }//end get
 	
-
 	/** 
 	 * 현재 등록된 모든 사용자를 가져오기.
 	 * query return type >> List<T>
 	 *   - 결과값이 없을때 ?  크기가 0인 List<T> 가 반환된다.
-	 * 
-	 * @return
 	 */
 	public List<User> getAll(){
 		return this.jdbcTemplate.query("SELECT * FROM USERS ORDER BY ID", this.userMapper);
 	}
 	
+	
 	public void deleteAll(){
-			/*
-			this.jdbcTemplate.update( new PreparedStatementCreator() {
-				@Override
-				public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-					return con.prepareStatement("delete from users");
-				}
-			});*/
-		
 		//내장콜백호출.
 		this.jdbcTemplate.update("delete from users");
 	}
 	
 	public int getCount(){
-		/*
-		return this.jdbcTemplate.query(new PreparedStatementCreator() { //첫 번째 callback Statement create
-			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-				// TODO Auto-generated method stub
-				return con.prepareStatement("select count(*) from users");
-			}
-		}, new ResultSetExtractor<Integer>() {  //두번쨰 콜백 ResultSet으로부터 값 추출
-			public Integer extractData(ResultSet rs) throws SQLException, DataAccessException{
-				rs.next();
-				return rs.getInt(1);
-			}
-		});*/
-		
 		return this.jdbcTemplate.queryForObject("select count(*) from users",Integer.class);
-	}//end getCount method 
+	}//end getCount method
+	
+	
 	
 }//end class
+
+
 

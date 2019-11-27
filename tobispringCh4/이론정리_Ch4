@@ -1,0 +1,25 @@
+
+ch4. 예외
+ 4.1.2 예외의 종류와 특징 
+  - 자바에서 throw를 통해 발생시킬 수 있는 예외의 종류 : Error, Exception과 체크예외(checked exception), RuntimeException과 언체크/런타임 예외
+ 
+   ■ Error
+     - java.lang.Error class의 subClass 
+     - 시스템에서 비정상적인 문제일시(JAVA VM에서 발생시킴)
+     - Application에서 error에 대한 처리는 신경쓰지 말자
+     - ex. OutofMememoryError, ThreadDeath
+     
+   ■ Exception과 checked Exception 
+     - checked Exception  : java.lang.Exception class와 subClass 이면서 RuntimeException을 상속하지 않은 class.
+     - application code 작업중의 예외상황이 발생했을 경우 사용.
+     - 일반적인 예외를 애기할때는 checked Exception으로 생각해도 무방.
+     - checked Exception이 발생할 수 있는 메소드 사용시 반드시 예외처리 구문을 삽입해야 한다.
+     - ex) IOException, SQLException
+     
+   ■ RuntimeException과 언체크/런타임 예외
+     - RuntimeException은 Exception의 subClass.
+     - 자바에서는 RuntimeException과 subClass를 특별하게 관리
+     - unchecked Exception : RuntimeException class의 subClass
+     - 명시적으로 강제 처리하지 않기 때문에, 예외처리 구문을 넣지 않아도 된다.
+     - ex) NullPointerException, IllegalArgumentException
+     - https://docs.oracle.com/javase/7/docs/api/java/lang/RuntimeException.html
