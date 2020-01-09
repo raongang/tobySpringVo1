@@ -12,7 +12,7 @@
 	
 	
 	<!-- DI  -->
-	<bean id="userDao" class="springbook.user.dao.UserDao">
+	<bean id="userDao" class="springbook.user.dao.UserDaoImpl">
 		<property name="jdbcTemplate" ref="dataSource" />
 	</bean>
 	

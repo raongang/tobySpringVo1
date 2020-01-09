@@ -9,6 +9,8 @@ ch4. 예외
      - Application에서 error에 대한 처리는 신경쓰지 말자
      - ex. OutofMememoryError, ThreadDeath
      
+   ■ Exception 클래스는 체크예외와 언체크예외로 구분된다.  
+     
    ■ Exception과 checked Exception 
      - checked Exception  : java.lang.Exception class와 subClass 이면서 RuntimeException을 상속하지 않은 class.
      - application code 작업중의 예외상황이 발생했을 경우 사용.
@@ -20,6 +22,30 @@ ch4. 예외
      - RuntimeException은 Exception의 subClass.
      - 자바에서는 RuntimeException과 subClass를 특별하게 관리
      - unchecked Exception : RuntimeException class의 subClass
+     - 주로, 프로그램의 오류가 있을때 발생하도록 의도된 것들.
      - 명시적으로 강제 처리하지 않기 때문에, 예외처리 구문을 넣지 않아도 된다.
      - ex) NullPointerException, IllegalArgumentException
      - https://docs.oracle.com/javase/7/docs/api/java/lang/RuntimeException.html
+     
+     
+ 4.1.3 예외처리 방법
+   1. 예외복구      
+   2. 예외처리회피
+     - throw를 이용.
+   3. 예외전환
+     - throw를 이용해서 예외를 던지지만, 그대로 넘기는게 아닌 적절한 예외로 전환해서 던짐.
+     - ex) throw DuplicateUserIdException(e);
+           throw DuplicationUserIdException().initCause(e);
+     - 주로 체크예외에서 언체크예외로 바꾸는 경우에 많이 쓴다.
+   
+ 4.1.4 예외처리 전략
+   1. 런타임 예외의 보편화
+   2. 애플리케이션 예외  
+      - 시스템 또는 외부의 예외상황이 원인이 아니라 애플리케이션 자체의 로직에 의해 의도적으로 발생시키고 반드시 catch해서 무엇인가 조치를 취하도록 요구하는 예외
+      
+ 
+4.2.1 JDBC의 한계
+  1. SQLException
+     - 스프링은 DataAccessException이라는 SQLException을 대체할 수 있는 런타임 예외를 정의하고 있을 뿐 아니라, DataAccessException의 서브클래스로 세분화된 예외클래스들을 정의하고 있다. 
+     - SQLException을 대체하는 많은 서브클래스들은 내부에 SQLException을 가지고 있다.
+     	cf) DuplicateKeyException은 중첩된 예외로, JDBC API에서 처음 발생한 SQLException을 가지고 내부에 가지고 있다. (UserDaoTest.java )  
