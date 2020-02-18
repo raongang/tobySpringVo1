@@ -11,12 +11,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import springbook.user.dao.UserDao;
-import springbook.user.domain.User; 
+import springbook.user.domain.User;
+import springbook.user.domain.User.UserLevel; 
 
 /**
  *    @Test 조건 
@@ -29,7 +29,7 @@ import springbook.user.domain.User;
 @RunWith(SpringJUnit4ClassRunner.class)
 //테스트 컨텍스트가 자동으로 만들어줄 application context 위치 지정
 @ContextConfiguration(locations="/applicationContext.xml")
-public class UserDaoConnectionTestXMLJunit {
+public class UserDaoChapter5 {
 	
 	//픽스처 - 테스트를 수행하는 필요한 정보나 오브젝트.
 	private User user1;
@@ -59,10 +59,11 @@ public class UserDaoConnectionTestXMLJunit {
 		System.out.println("======================== this ======================== " + this);
 		
 		//this.dao = this.context.getBean("userDao",UserDao.class);
-		this.user1 = new User("abc","tom","married"); //픽스처
-		this.user2 = new User("bcd","tom2","married2"); 
-		this.user3 = new User("cde","tom3","married3");
+		this.user1 = new User("abc","tom","married", UserLevel.BASIC,1,0); //픽스처
+		this.user2 = new User("bcd","tom2","married2",UserLevel.SILVER,55,10); 
+		this.user3 = new User("cde","tom3","married3",UserLevel.GOLD,100,40);
 	}
+	
 	
 	@Test
 	public void addAndGet() throws SQLException, ClassNotFoundException{ //Jnit 테스트위해 접근제어자를 public으로..)
@@ -77,74 +78,52 @@ public class UserDaoConnectionTestXMLJunit {
 		
 		dao.add(user3);
 		assertThat(dao.getCount(),is(3));
-			
 	}
-
 	
 	@Test 
 	public void addAndGetExpand() throws ClassNotFoundException, SQLException {
-		
 		dao.deleteAll();
 		assertThat(dao.getCount(),is(0));
 		
 		dao.add(user1);
 		dao.add(user2);
-		assertThat(dao.getCount(),is(2));
+		dao.add(user3);
+		assertThat(dao.getCount(),is(3));
 		
 		User userget1 = dao.get(user1.getId());
-		assertThat(userget1.getName(),is(user1.getName()));
-		assertThat(userget1.getPassword(),is(user1.getPassword()));
+		checkSumUser(userget1,user1);
 		
 		User userget2 = dao.get(user2.getId());
-		assertThat(userget2.getName(),is(user2.getName()));
-		assertThat(userget2.getPassword(),is(user2.getPassword()));		
-	}
-	
-	//getId()가 없을때 예외처리 - 스프링에 정의된 Data Access Exception Class를 이용.
-	@Test(expected=EmptyResultDataAccessException.class)   //테스트중에 발생할 것으로 기대하는 예외 클래스를 지정
-	public void getUserFailure() throws SQLException, ClassNotFoundException{
-		dao.deleteAll();
-		System.out.println("dao.getCount() >> " + dao.getCount());
-		assertThat(dao.getCount(),is(0));
-		dao.get("unknown_id"); //강제 예외 발생
-	}
-	
-	/**
-	 * @throws ClassNotFoundException
-	 * @throws SQLException
-	 */
-	@Test
-	public void getAll() throws ClassNotFoundException, SQLException {
-		dao.deleteAll();
-		
-		List<User> users0 = dao.getAll();
-		assertThat(users0.size(),is(0));
-		
-		dao.add(user1);
-		List<User> users1 = dao.getAll();
-		assertThat(users1.size(),is(1));
-		checkSumUser(user1,users1.get(0));		
-		
-		dao.add(user2);
-		List<User> users2 = dao.getAll();
-		assertThat(users2.size(),is(2));
-		checkSumUser(user1,users2.get(0));		
-		checkSumUser(user2,users2.get(1));		
-		
-		dao.add(user3);
-		List<User> users3 = dao.getAll();
-		assertThat(users3.size(),is(3));
-		checkSumUser(user1,users3.get(0));		
-		checkSumUser(user2,users3.get(1));				
-		checkSumUser(user3,users3.get(2));		
-		
+		checkSumUser(userget2,user2);
 	}
 	
 	@SuppressWarnings("unused")
 	private void checkSumUser(User user1, User user2) {
+		
 		assertThat(user1.getId(),is(user2.getId()));
 		assertThat(user1.getName(),is(user2.getName()));
 		assertThat(user1.getPassword(),is(user2.getPassword()));
+		
+		assertThat(user1.getLogin(),is(user2.getLogin()));
+		assertThat(user1.getRecommend(),is(user2.getRecommend()));
 	}
 	
+	/* 간단한 수정 기능 테스트 */
+	@Test
+	public void update() {
+		dao.deleteAll();
+		dao.add(user1);
+		
+		user1.setName("TEST");
+		user1.setPassword("spring3");
+		user1.setUserLevel(UserLevel.GOLD);
+		user1.setLogin(1000);
+		user1.setRecommend(999);
+		
+		dao.update(user1);
+		
+		User user1update = dao.get(user1.getId());
+		checkSumUser(user1, user1update);
+		
+	}//end update
 }

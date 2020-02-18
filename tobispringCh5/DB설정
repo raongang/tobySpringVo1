@@ -18,3 +18,11 @@ create table users(
 select * from users;
 
 
+
+3. user table 컬럼 추가
+
+delete from users;
+
+ALTER TABLE users ADD(userLevel int not null);
+ALTER TABLE users ADD(login int not null);
+ALTER TABLE users ADD(recommend int not null);

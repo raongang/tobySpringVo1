@@ -11,6 +11,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 import springbook.user.domain.User;
+import springbook.user.domain.User.UserLevel;
+import sun.util.logging.PlatformLogger.Level;
 
 /**
  * DI(Dependency Injection) A ----> B A는 B에 의존한다. 즉, B의 내용이 바뀌면 A에도 영향을 미친다.
@@ -36,6 +38,9 @@ public class UserDaoImpl implements UserDao{
 			user.setId(rs.getString("id"));
 			user.setName(rs.getString("name"));
 			user.setPassword(rs.getString("password"));
+			user.setUserLevel(UserLevel.valueOf(rs.getInt("userLevel")));
+			user.setLogin(rs.getInt("login"));
+			user.setRecommend(rs.getInt("recommend"));
 			return user;
 		}
 	};
@@ -47,7 +52,7 @@ public class UserDaoImpl implements UserDao{
 		//수동 DI
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
-
+	
 	/**
 	 * 템플릿,콜백 패턴 - add 메소드 : Client - StatementStrategy : callback - jdbcContext.workWithStatementStrategy : template
 	 *   
@@ -61,6 +66,7 @@ public class UserDaoImpl implements UserDao{
 			throw new DuplicateUserIdException(e); //예외를 전환시에는 원인이 되는 예외를 중첩하는 것이 좋다.
 		}
 		
+		
 		//try {
 		//	//JDBC를 이용해서 USER정보를 db에 추가하는 코드 또는 그런 기능이 있는 다른 SQLException을 던지는 메소드를 호출하는 코드
 		//}catch(SQLException e) {
@@ -71,16 +77,14 @@ public class UserDaoImpl implements UserDao{
 	*/
 	
 	/**
-	 * 템플릿,콜백 패턴 - add 메소드 : Client - StatementStrategy s: callback - jdbcContext.workWithStatementStrategy : template
+	 * 템플릿,콜백 패턴 - add 메소드 : Client - StatementStrategys:  callback - jdbcContext.workWithStatementStrategy : template
 	 *   
 	 *  SQLException 예외처리 
 	 *   - Spring은 DB별 ERROR CODE를 분류해서 Spring이 정의한 예외클래스와 매핑 해 놓은 에러 코드 매핑정보 테이블을 만들어두고 이를 이용.
 	 */
 	public void add(final User user) {
-		this.jdbcTemplate.update("insert into users(id,name,password) values(?,?,?)", user.getId(), user.getName(), user.getPassword());
+		this.jdbcTemplate.update("insert into users(id,name,password,userLevel,login,recommend) values(?,?,?,?,?,?)", user.getId(), user.getName(), user.getPassword(),user.getUserLevel().initValue(),user.getLogin(),user.getRecommend());
 	}
-	
-
 	
 	// queryForObject 의 조회결과가 없을 경우 예외처리가 자동으로 됨 / EmptyResultDataAccessException
 	public User get(String id) { // row 1번 조회
@@ -93,11 +97,11 @@ public class UserDaoImpl implements UserDao{
 		// 내장콜백호출.
 		this.jdbcTemplate.update("delete from users");
 	}
+	
 	/** 
 	 * 현재 등록된 모든 사용자를 가져오기.
 	 * query return type >> List<T>
-	 *   - 결과값이 없을때 ?  크기가 0인 List<T> 가 반환된다.
-	 * 
+	 *   - 결과값이 없을때 ?  크기가 0인 List<T> 가 반환된다. 
 	 * @return
 	 */
 	public List<User> getAll(){
@@ -109,5 +113,16 @@ public class UserDaoImpl implements UserDao{
 	}// end getCount method
 	
 	
+	/** update */
+	@Override
+	public void update(User user) {
+		// TODO Auto-generated method stub
+		this.jdbcTemplate.update("update users set name=?,password=?,userLevel=?,login=?, recommend=? where id=?", 
+				user.getName(),user.getPassword(),user.getUserLevel().initValue(),user.getLogin(),user.getRecommend(),user.getId());
+	}
 
+	
+	
+	
+	
 }// end class
