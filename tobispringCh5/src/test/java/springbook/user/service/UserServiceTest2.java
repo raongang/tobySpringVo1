@@ -31,26 +31,23 @@ public class UserServiceTest2 {
 	@Autowired
 	private UserDao userDao;
 	
+	
+	public static final int MIN_LOGCOUNT_FOR_SILVER = 50;
+	public static final int MIN_RECOMMEND_FOR_GOLD = 30;
+	
 	//픽스쳐 선언 
 	List<User> users;
-	
-	List<User> users2;
-	
+
 	@Before
 	public void setUp() {
 		//배열을 리스트로 만들어주는 메소드 배열.
 		users = Arrays.asList(
-			new User ("bumjin", "박범진", "p1", UserLevel.BASIC, 49, 0),
-			new User ("joytouch", "강명성", "p2", UserLevel.BASIC, 50, 0),
-			new User ("erwins", "신승한", "p1", UserLevel.SILVER, 60, 29),
-			new User ("madnite1", "박범진", "p1", UserLevel.SILVER, 60, 30),
-			new User ("green", "박범진", "p1", UserLevel.GOLD, 100, 100)
+			new User ("bumjin", "박범진", "p1", UserLevel.BASIC, MIN_LOGCOUNT_FOR_SILVER-1, 0),
+			new User ("joytouch", "강명성", "p2", UserLevel.BASIC, MIN_LOGCOUNT_FOR_SILVER, 0),
+			new User ("erwins", "신승한", "p1", UserLevel.SILVER, 60, MIN_RECOMMEND_FOR_GOLD-1),
+			new User ("madnite1", "박범진", "p1", UserLevel.SILVER, 60, MIN_RECOMMEND_FOR_GOLD),
+			new User ("green", "박범진", "p1", UserLevel.GOLD, 100, Integer.MAX_VALUE)
 		);
-		
-		
-		users2 = Arrays.asList(
-				new User ("bumjin", "박범진", "p1", UserLevel.BASIC, 49, 0)
-			);
 	}
 	
 	@Test
