@@ -19,6 +19,12 @@ import springbook.user.dao.UserDao;
 import springbook.user.domain.User;
 import springbook.user.domain.User.UserLevel;
 
+/**
+ *   데이터 update중에 에러가 발생했을때, 이전 데이터는 roll-back이 되는지, 그대로 commit이 되는지 
+ *   확인하기 위한 테스트 
+ * 
+*/
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="/applicationContext.xml")
 public class UserServiceTest {
@@ -66,8 +72,9 @@ public class UserServiceTest {
 		try {
 			//TestUserSerivce는 업그레이드 작업중에 예외가 발생해야 함. 정상 종료라면 문제 있으니 실패.
 			testUserSerivce.upgradeLevels();
-			fail("TestUserSerivceException expected");
+			fail("TestUserSerivceException expected"); //JUnit 테스트 결과를 무조건 fail로 함 ( ex. java.lang.AssertionError:message )
 		}catch(TestUserServiceException e) {
+			System.out.println("예외발생");
 			//TestUserSerivce가 던져주는 예외를 잡아서 계속 진행되게 한다. 그외는 실패처리 
 		}
 		//예외가 발생하기전에 레벨 변경이 있었던 사용자의 레벨이 처음 상태로 바뀌었나 체크함.

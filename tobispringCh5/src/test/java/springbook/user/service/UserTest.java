@@ -1,21 +1,20 @@
 package springbook.user.service;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import springbook.user.dao.UserDao;
 import springbook.user.domain.User;
 import springbook.user.domain.User.UserLevel;
+
+/**
+ * enum에 선언한 next level에 대한 테스트
+*/
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="/applicationContext.xml")

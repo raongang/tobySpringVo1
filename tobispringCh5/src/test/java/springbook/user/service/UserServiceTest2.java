@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +17,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import springbook.user.dao.UserDao;
 import springbook.user.domain.User;
 import springbook.user.domain.User.UserLevel;
+
+
+/**
+ *  LEVEL이 정상적으로 upgrade되는지 확인하기 위한 테스트 
+*/
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="/applicationContext.xml")
@@ -56,8 +62,6 @@ public class UserServiceTest2 {
 		userDao.deleteAll();
 		
 		for(User user:users) { userDao.add(user); };
-			
-		
 		userSerivce.upgradeLevels();
 		
 		//업그레이드후의 예상 레벨을 검증한다.

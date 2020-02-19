@@ -43,7 +43,6 @@ public class UserService {
 	
 	//레벨 업그레이드 작업 메소드
 	protected void upgradeLevel(User user) {
-		System.out.println("여기");
 		user.upgradeLevel();
 		userDao.update(user);
 	}
