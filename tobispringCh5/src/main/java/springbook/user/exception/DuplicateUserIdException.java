@@ -1,13 +1,10 @@
 package springbook.user.exception;
 
-
-
 /** ID Duplicate exception class
  * 
  * 	object
  *    └ Throwable class
  *       └ Exception
- *       
  *    
  *    어디서든 DuplicateUserIdException 를 잡아서 처리할 수 있으면 런타임 예외로 만드는게 나음.
  *    대신 명시적으로 throw DuplicateUserIdException 를 이용해야함 ( cf. add() )

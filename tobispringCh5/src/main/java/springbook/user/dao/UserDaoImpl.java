@@ -119,10 +119,6 @@ public class UserDaoImpl implements UserDao{
 		// TODO Auto-generated method stub
 		this.jdbcTemplate.update("update users set name=?,password=?,userLevel=?,login=?, recommend=? where id=?", 
 				user.getName(),user.getPassword(),user.getUserLevel().initValue(),user.getLogin(),user.getRecommend(),user.getId());
-	}
-
-	
-	
-	
+	} 
 	
 }// end class

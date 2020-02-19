@@ -46,7 +46,6 @@ public class UserDaoChapter5 {
 	@Before
 	public void setUp() {
 		
-		
 		/**
 		 *   this.context 
 		 *     - 값 모두 동일 
@@ -63,7 +62,6 @@ public class UserDaoChapter5 {
 		this.user2 = new User("bcd","tom2","married2",UserLevel.SILVER,55,10); 
 		this.user3 = new User("cde","tom3","married3",UserLevel.GOLD,100,40);
 	}
-	
 	
 	@Test
 	public void addAndGet() throws SQLException, ClassNotFoundException{ //Jnit 테스트위해 접근제어자를 public으로..)
@@ -112,7 +110,9 @@ public class UserDaoChapter5 {
 	@Test
 	public void update() {
 		dao.deleteAll();
+		
 		dao.add(user1);
+		dao.add(user2);
 		
 		user1.setName("TEST");
 		user1.setPassword("spring3");
@@ -125,5 +125,9 @@ public class UserDaoChapter5 {
 		User user1update = dao.get(user1.getId());
 		checkSumUser(user1, user1update);
 		
+		User user2same = dao.get(user2.getId());
+		checkSumUser(user2, user2same);
+		
 	}//end update
+
 }

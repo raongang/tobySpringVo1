@@ -11,16 +11,24 @@ public class User {
 	int recommend;
 	
 	public enum UserLevel{
-		BASIC(1), SILVER(2), GOLD(3);
+		
+		//다음 단계도 같이 설정
+		GOLD(3,null), SILVER(2,GOLD), BASIC(1,SILVER); 
 		
 		private final int value;
+		private final UserLevel next;
 		
-		UserLevel(int value){
+		UserLevel(int value, UserLevel next){
 			this.value = value;
+			this.next  = next;
 		}
 		
 		public int initValue(){ //값을 가져오느 메소드
 			return value;
+		}
+		
+		public UserLevel nextLevel() {
+			return this.next;
 		}
 		
 		public static UserLevel valueOf(int value) { 
@@ -31,9 +39,18 @@ public class User {
 				default : throw new AssertionError("Unkown value : " + value);
 			}
 		}
-	}//end level
+	}//end enum
 	
-
+	public void upgradeLevel() {
+		UserLevel nextLevel = this.userLevel.next;
+		
+		if(nextLevel== null) {
+			throw new IllegalStateException(this.userLevel + "은 업그레이드가 불가능합니다.");
+		}else {
+			this.userLevel = nextLevel;
+		}
+	}
+	
 
 	public User(String id, String name, String password, UserLevel userLevel, int login, int recommend) {
 		super();
@@ -44,8 +61,6 @@ public class User {
 		this.login = login;
 		this.recommend = recommend;
 	}
-	
-
 
 	public UserLevel getUserLevel() {
 		return userLevel;
@@ -73,8 +88,6 @@ public class User {
 		this.recommend = recommend;
 	}
 
-
-
 	public User() {
 		
 	}
@@ -82,24 +95,32 @@ public class User {
 	public String getId() {
 		return id;
 	}
+	
 	public void setId(String id) {
 		this.id = id;
 	}
+	
 	public String getName() {
 		return name;
 	}
+	
 	public void setName(String name) {
 		this.name = name;
 	}
+	
 	public String getPassword() {
 		return password;
 	}
+	
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
 		return "id >> " + id + " name >> " + name + " password >> " + password;
 	}
+	
+	
 }
