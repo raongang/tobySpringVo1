@@ -60,8 +60,8 @@ public class UserServiceTest {
 	
 	@Test
 	public void upgradeAllOrNothing() {
-		//예외를 발생시킬 사용자의 id를 넣어서 테스트용 UserService 대역 오브젝트를 생성한다.
 		
+		//예외를 발생시킬 사용자의 id를 넣어서 테스트용 UserService 대역 오브젝트를 생성한다.
 		UserService testUserSerivce = new TestUserService(users.get(3).getId());
 		testUserSerivce.setUserDao(this.userDao);//useDao를 수동 DI
 		
