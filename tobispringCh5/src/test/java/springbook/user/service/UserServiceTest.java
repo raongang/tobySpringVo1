@@ -7,6 +7,8 @@ import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +24,6 @@ import springbook.user.domain.User.UserLevel;
 /**
  *   데이터 update중에 에러가 발생했을때, 이전 데이터는 roll-back이 되는지, 그대로 commit이 되는지 
  *   확인하기 위한 테스트 
- * 
 */
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -36,9 +37,11 @@ public class UserServiceTest {
 	@Autowired 
 	private ApplicationContext context;
 	
-	
 	@Autowired
 	private UserDao userDao;
+	
+	@Autowired
+	DataSource dataSource;
 	
 	public static final int MIN_LOGCOUNT_FOR_SILVER = 50;
 	public static final int MIN_RECOMMEND_FOR_GOLD = 30;
@@ -59,11 +62,12 @@ public class UserServiceTest {
 	}
 	
 	@Test
-	public void upgradeAllOrNothing() {
+	public void upgradeAllOrNothing() throws Exception {
 		
 		//예외를 발생시킬 사용자의 id를 넣어서 테스트용 UserService 대역 오브젝트를 생성한다.
 		UserService testUserSerivce = new TestUserService(users.get(3).getId());
 		testUserSerivce.setUserDao(this.userDao);//useDao를 수동 DI
+		testUserSerivce.setDataSource(dataSource); //DataSource DI
 		
 		userDao.deleteAll();
 		

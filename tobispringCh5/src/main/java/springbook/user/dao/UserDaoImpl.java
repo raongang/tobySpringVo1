@@ -111,6 +111,7 @@ public class UserDaoImpl implements UserDao{
 	 *   - 결과값이 없을때 ?  크기가 0인 List<T> 가 반환된다. 
 	 * @return
 	 */
+	
 	public List<User> getAll(){
 		return this.jdbcTemplate.query("SELECT * FROM USERS ORDER BY ID", this.userMapper);
 	}

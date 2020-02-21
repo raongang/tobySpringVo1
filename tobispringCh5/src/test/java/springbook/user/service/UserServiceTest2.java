@@ -1,11 +1,13 @@
 package springbook.user.service;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import static org.hamcrest.CoreMatchers.is;
+import javax.sql.DataSource;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,6 +39,9 @@ public class UserServiceTest2 {
 	@Autowired
 	private UserDao userDao;
 	
+	@Autowired
+	private DataSource dataSource;
+	
 	
 	public static final int MIN_LOGCOUNT_FOR_SILVER = 50;
 	public static final int MIN_RECOMMEND_FOR_GOLD = 30;
@@ -57,12 +62,14 @@ public class UserServiceTest2 {
 	}
 	
 	@Test
-	public void upgradeLevels() {
+	public void upgradeLevels() throws Exception {
 		
 		userDao.deleteAll();
 		
 		for(User user:users) { userDao.add(user); };
+		userSerivce.setDataSource(dataSource);
 		userSerivce.upgradeLevels();
+		
 		
 		//업그레이드후의 예상 레벨을 검증한다.
 		checkLevelUpgrade(users.get(0), false);
