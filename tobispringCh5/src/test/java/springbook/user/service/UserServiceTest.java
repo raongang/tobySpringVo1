@@ -67,7 +67,7 @@ public class UserServiceTest {
 		
 		userDao.deleteAll();
 		
-		for(User user : users) userDao.add(user);
+		for(User user : users)  userDao.add(user); 
 		
 		try {
 			//TestUserSerivce는 업그레이드 작업중에 예외가 발생해야 함. 정상 종료라면 문제 있으니 실패.
@@ -80,20 +80,6 @@ public class UserServiceTest {
 		//예외가 발생하기전에 레벨 변경이 있었던 사용자의 레벨이 처음 상태로 바뀌었나 체크함.
 		checkLevelUpgrade(users.get(1),false);
 	}
-	
-	
-	//upgraded - 어떤 레벨로 바뀔 것인가가 아니라, 다음 레벨로 업그레이드 될것인가 아닌가를 지정.
-	private void checkLevelUpgrade(User user, boolean upgraded) {
-		System.out.println("checkLevelUpgrade");
-		User userUpdate = userDao.get(user.getId());
-		
-		if(upgraded) { //업데이트 일어났는지 확인
-			assertThat(userUpdate.getUserLevel(),is(user.getUserLevel().nextLevel()));
-		}else { //업데이트가 일어나지 않았는지 확인
-			assertThat(userUpdate.getUserLevel(),is(user.getUserLevel()));
-		}
-	}
-	
 	
 	/**  테스트를 위한 UserService 대역 생성
 	 *         ※  보통 오버라이딩을 하기 위해 class파일을 별도로 만들어서 상속하는데 테스트용이라면 다음과 같이 inner class중의 한
@@ -112,7 +98,6 @@ public class UserServiceTest {
 		@Override
 		protected void upgradeLevel(User user) { 
 			//지정된 id의 User 오브젝트가 발견되면 예외를 던져서 강제로 작업을 중지시킨다.
-			
 			System.out.println("this.id >> " + this.id);
 			System.out.println("user.getId() : " + user.getId());
 			
@@ -128,7 +113,17 @@ public class UserServiceTest {
 	
 	static class TestUserServiceException extends RuntimeException{ }
 	
-	
+	//upgraded - 어떤 레벨로 바뀔 것인가가 아니라, 다음 레벨로 업그레이드 될것인가 아닌가를 지정.
+	private void checkLevelUpgrade(User user, boolean upgraded) {
+		System.out.println("checkLevelUpgrade");
+		User userUpdate = userDao.get(user.getId());
+		
+		if(upgraded) { //업데이트 일어났는지 확인
+			assertThat(userUpdate.getUserLevel(),is(user.getUserLevel().nextLevel()));
+		}else { //업데이트가 일어나지 않았는지 확인
+			assertThat(userUpdate.getUserLevel(),is(user.getUserLevel()));
+		}
+	}//end checkLevelUpgrade
 }
 
 
