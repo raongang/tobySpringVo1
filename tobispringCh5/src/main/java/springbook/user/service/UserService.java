@@ -91,6 +91,7 @@ public class UserService {
 		
 		//트랜잭션 시작
 		//new DefaultTransactionDefinition() - transaction 속성 
+		
 		TransactionStatus status = this.transactionManager.getTransaction(new DefaultTransactionDefinition());
 
 		try {

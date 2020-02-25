@@ -1,3 +1,4 @@
+
 package springbook.user.service;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -81,7 +82,6 @@ public class UserServiceTest {
 			testUserSerivce.upgradeLevels();
 			fail("TestUserSerivceException expected"); //JUnit 테스트 결과를 무조건 fail로 함 ( ex. java.lang.AssertionError:message )
 		}catch(TestUserServiceException e) {
-			System.out.println("예외발생");
 			//TestUserSerivce가 던져주는 예외를 잡아서 계속 진행되게 한다. 그외는 실패처리 
 		}
 		//예외가 발생하기전에 레벨 변경이 있었던 사용자의 레벨이 처음 상태로 바뀌었나 체크함.
@@ -90,7 +90,7 @@ public class UserServiceTest {
 	
 	
 	
-	/**  테스트를 위한 UserService 대역 생성
+	/**  테스트를 위한 UserService 대역 생성 
 	 *         ※  보통 오버라이딩을 하기 위해 class파일을 별도로 만들어서 상속하는데 테스트용이라면 다음과 같이 inner class중의 한
 	 *     종류인 nested class를 이용하면 편함. 
 	 *        
