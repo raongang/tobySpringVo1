@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import springbook.user.dao.UserDao;
 import springbook.user.domain.User;
@@ -41,7 +42,8 @@ public class UserServiceTest {
 	private UserDao userDao;
 	
 	@Autowired
-	DataSource dataSource;
+	private PlatformTransactionManager transactionManager;
+
 	
 	public static final int MIN_LOGCOUNT_FOR_SILVER = 50;
 	public static final int MIN_RECOMMEND_FOR_GOLD = 30;
@@ -53,13 +55,14 @@ public class UserServiceTest {
 	public void setUp() {
 		//배열을 리스트로 만들어주는 메소드 배열.
 		users = Arrays.asList(
-			new User ("bumjin", "박범진", "p1", UserLevel.BASIC, MIN_LOGCOUNT_FOR_SILVER-1, 0),
-			new User ("joytouch", "강명성", "p2", UserLevel.BASIC, MIN_LOGCOUNT_FOR_SILVER, 0),
-			new User ("erwins", "신승한", "p1", UserLevel.SILVER, 60, MIN_RECOMMEND_FOR_GOLD-1),
-			new User ("madnite1", "박범진", "p1", UserLevel.SILVER, 60, MIN_RECOMMEND_FOR_GOLD),
-			new User ("green", "박범진", "p1", UserLevel.GOLD, 100, Integer.MAX_VALUE)
+			new User ("bumjin", "박범진", "p1", UserLevel.BASIC, MIN_LOGCOUNT_FOR_SILVER-1, 0, "sayllclubs.naver.com"),
+			new User ("joytouch", "강명성", "p2", UserLevel.BASIC, MIN_LOGCOUNT_FOR_SILVER, 0,"sayllclubs.naver.com"),
+			new User ("erwins", "신승한", "p1", UserLevel.SILVER, 60, MIN_RECOMMEND_FOR_GOLD-1,"sayllclubs.naver.com"),
+			new User ("madnite1", "박범진", "p1", UserLevel.SILVER, 60, MIN_RECOMMEND_FOR_GOLD,"sayllclubs.naver.com"),
+			new User ("green", "박범진", "p1", UserLevel.GOLD, 100, Integer.MAX_VALUE,"sayllclubs.naver.com")
 		);
 	}
+	
 	
 	@Test
 	public void upgradeAllOrNothing() throws Exception {
@@ -67,7 +70,7 @@ public class UserServiceTest {
 		//예외를 발생시킬 사용자의 id를 넣어서 테스트용 UserService 대역 오브젝트를 생성한다.
 		UserService testUserSerivce = new TestUserService(users.get(3).getId());
 		testUserSerivce.setUserDao(this.userDao);//useDao를 수동 DI
-		testUserSerivce.setDataSource(dataSource); //DataSource DI
+		testUserSerivce.setTransactionManager(transactionManager);
 		
 		userDao.deleteAll();
 		
@@ -84,6 +87,8 @@ public class UserServiceTest {
 		//예외가 발생하기전에 레벨 변경이 있었던 사용자의 레벨이 처음 상태로 바뀌었나 체크함.
 		checkLevelUpgrade(users.get(1),false);
 	}
+	
+	
 	
 	/**  테스트를 위한 UserService 대역 생성
 	 *         ※  보통 오버라이딩을 하기 위해 class파일을 별도로 만들어서 상속하는데 테스트용이라면 다음과 같이 inner class중의 한

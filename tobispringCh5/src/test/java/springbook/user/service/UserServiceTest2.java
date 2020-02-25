@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import springbook.user.dao.UserDao;
 import springbook.user.domain.User;
@@ -40,7 +41,7 @@ public class UserServiceTest2 {
 	private UserDao userDao;
 	
 	@Autowired
-	private DataSource dataSource;
+	private PlatformTransactionManager transactionManager;
 	
 	
 	public static final int MIN_LOGCOUNT_FOR_SILVER = 50;
@@ -53,11 +54,11 @@ public class UserServiceTest2 {
 	public void setUp() {
 		//배열을 리스트로 만들어주는 메소드 배열.
 		users = Arrays.asList(
-			new User ("bumjin", "박범진", "p1", UserLevel.BASIC, MIN_LOGCOUNT_FOR_SILVER-1, 0),
-			new User ("joytouch", "강명성", "p2", UserLevel.BASIC, MIN_LOGCOUNT_FOR_SILVER, 0),
-			new User ("erwins", "신승한", "p1", UserLevel.SILVER, 60, MIN_RECOMMEND_FOR_GOLD-1),
-			new User ("madnite1", "박범진", "p1", UserLevel.SILVER, 60, MIN_RECOMMEND_FOR_GOLD),
-			new User ("green", "박범진", "p1", UserLevel.GOLD, 100, Integer.MAX_VALUE)
+			new User ("bumjin", "박범진", "p1", UserLevel.BASIC, MIN_LOGCOUNT_FOR_SILVER-1, 0,"sayllclubs.naver.com"),
+			new User ("joytouch", "강명성", "p2", UserLevel.BASIC, MIN_LOGCOUNT_FOR_SILVER, 0,"sayllclubs.naver.com"),
+			new User ("erwins", "신승한", "p1", UserLevel.SILVER, 60, MIN_RECOMMEND_FOR_GOLD-1,"sayllclubs.naver.com"),
+			new User ("madnite1", "박범진", "p1", UserLevel.SILVER, 60, MIN_RECOMMEND_FOR_GOLD,"sayllclubs.naver.com"),
+			new User ("green", "박범진", "p1", UserLevel.GOLD, 100, Integer.MAX_VALUE, "sayllclubs.naver.com")
 		);
 	}
 	
@@ -67,7 +68,7 @@ public class UserServiceTest2 {
 		userDao.deleteAll();
 		
 		for(User user:users) { userDao.add(user); };
-		userSerivce.setDataSource(dataSource);
+		userSerivce.setTransactionManager(transactionManager);
 		userSerivce.upgradeLevels();
 		
 		

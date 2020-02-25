@@ -47,6 +47,7 @@ public class UserDaoImpl implements UserDao{
 			user.setUserLevel(UserLevel.valueOf(rs.getInt("userLevel")));
 			user.setLogin(rs.getInt("login"));
 			user.setRecommend(rs.getInt("recommend"));
+			user.setEmailAddress(rs.getString("emailAddress"));
 			return user;
 		}
 	};
@@ -89,7 +90,7 @@ public class UserDaoImpl implements UserDao{
 	 *   - Spring은 DB별 ERROR CODE를 분류해서 Spring이 정의한 예외클래스와 매핑 해 놓은 에러 코드 매핑정보 테이블을 만들어두고 이를 이용.
 	 */
 	public void add(final User user) {
-		this.jdbcTemplate.update("insert into users(id,name,password,userLevel,login,recommend) values(?,?,?,?,?,?)", user.getId(), user.getName(), user.getPassword(),user.getUserLevel().initValue(),user.getLogin(),user.getRecommend());
+		this.jdbcTemplate.update("insert into users(id,name,password,userLevel,login,recommend, emailAddress) values(?,?,?,?,?,?,?)", user.getId(), user.getName(), user.getPassword(),user.getUserLevel().initValue(),user.getLogin(),user.getRecommend(), user.getEmailAddress());
 	}
 	
 	// queryForObject 의 조회결과가 없을 경우 예외처리가 자동으로 됨 / EmptyResultDataAccessException
@@ -123,9 +124,11 @@ public class UserDaoImpl implements UserDao{
 	/** update */
 	@Override
 	public void update(User user) {
+		
+		System.out.println("user data : " + user.toString());
 		// TODO Auto-generated method stub
-		this.jdbcTemplate.update("update users set name=?,password=?,userLevel=?,login=?, recommend=? where id=?", 
-				user.getName(),user.getPassword(),user.getUserLevel().initValue(),user.getLogin(),user.getRecommend(),user.getId());
+		this.jdbcTemplate.update("update users set name=?,password=?,userLevel=?,login=?, recommend=? , emailAddress=? where id=?", 
+				user.getName(),user.getPassword(),user.getUserLevel().initValue(),user.getLogin(),user.getRecommend(),user.getEmailAddress(),user.getId());
 	} 
 	
 }// end class

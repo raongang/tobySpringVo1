@@ -5,6 +5,7 @@ public class User {
 	String id;
 	String name;
 	String password;
+	String emailAddress;
 	
 	UserLevel userLevel;
 	int login;
@@ -52,7 +53,7 @@ public class User {
 	}
 	
 
-	public User(String id, String name, String password, UserLevel userLevel, int login, int recommend) {
+	public User(String id, String name, String password, UserLevel userLevel, int login, int recommend, String emailAddress) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -60,6 +61,7 @@ public class User {
 		this.userLevel = userLevel;
 		this.login = login;
 		this.recommend = recommend;
+		this.emailAddress = emailAddress;
 	}
 
 	public UserLevel getUserLevel() {
@@ -116,10 +118,22 @@ public class User {
 		this.password = password;
 	}
 	
+	
+	
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+
+
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+
+
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return "id >> " + id + " name >> " + name + " password >> " + password;
+		return "id >> " + id + " name >> " + name + " password >> " + password + " emailAddress >> " + emailAddress;
 	}
 	
 	

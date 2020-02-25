@@ -58,9 +58,11 @@ public class UserDaoChapter5 {
 		System.out.println("======================== this ======================== " + this);
 		
 		//this.dao = this.context.getBean("userDao",UserDao.class);
-		this.user1 = new User("abc","tom","married", UserLevel.BASIC,1,0); //픽스처
-		this.user2 = new User("bcd","tom2","married2",UserLevel.SILVER,55,10); 
-		this.user3 = new User("cde","tom3","married3",UserLevel.GOLD,100,40);
+		this.user1 = new User("abc","tom","married", UserLevel.BASIC,1,0,"sayllclubs@naver.com"); //픽스처
+		this.user2 = new User("bcd","tom2","married2",UserLevel.SILVER,55,10,"sayllclubs@naver.com"); 
+		this.user3 = new User("cde","tom3","married3",UserLevel.GOLD,100,40,"sayllclubs@naver.com");
+		
+		
 	}
 	
 	@Test
