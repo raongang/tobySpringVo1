@@ -60,6 +60,10 @@ public class UserDaoImpl implements UserDao{
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
 	
+	public JdbcTemplate getJdbcTemplate() {
+		return jdbcTemplate;
+	}
+
 	/**
 	 * 템플릿,콜백 패턴 - add 메소드 : Client - StatementStrategy : callback - jdbcContext.workWithStatementStrategy : template
 	 *   
@@ -73,7 +77,6 @@ public class UserDaoImpl implements UserDao{
 			throw new DuplicateUserIdException(e); //예외를 전환시에는 원인이 되는 예외를 중첩하는 것이 좋다.
 		}
 		
-		
 		//try {
 		//	//JDBC를 이용해서 USER정보를 db에 추가하는 코드 또는 그런 기능이 있는 다른 SQLException을 던지는 메소드를 호출하는 코드
 		//}catch(SQLException e) {
@@ -82,7 +85,7 @@ public class UserDaoImpl implements UserDao{
 		//}
 	}// end add
 	*/
-	
+
 	/**
 	 * 템플릿,콜백 패턴 - add 메소드 : Client - StatementStrategys:  callback - jdbcContext.workWithStatementStrategy : template
 	 *   
@@ -120,16 +123,13 @@ public class UserDaoImpl implements UserDao{
 		return this.jdbcTemplate.queryForObject("select count(*) from users", Integer.class);
 	}// end getCount method
 	
-	
 	/** update */
 	@Override
 	public void update(User user) {
-		
 		System.out.println("user data : " + user.toString());
 		// TODO Auto-generated method stub
 		this.jdbcTemplate.update("update users set name=?,password=?,userLevel=?,login=?, recommend=? , emailAddress=? where id=?", 
 				user.getName(),user.getPassword(),user.getUserLevel().initValue(),user.getLogin(),user.getRecommend(),user.getEmailAddress(),user.getId());
 	}
-	
 	
 }// end class

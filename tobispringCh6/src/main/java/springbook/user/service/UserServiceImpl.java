@@ -13,15 +13,15 @@ import springbook.user.domain.User.UserLevel;
 
  // UserSerivce-->UserDao 에 의존. UserDao의 내용이 바뀌면 UserSerivce에 영향  , 따라서 UserDao를 Interface로 둬야 한다.
 public class UserServiceImpl implements UserService{
-	
-	UserDao userDao;
 
 	public static final int MIN_LOGCOUNT_FOR_SILVER = 50;
 	public static final int MIN_RECOMMEND_FOR_GOLD = 30;
 	
-	//DI
+	UserDao userDao;
+	
 	private PlatformTransactionManager transactionManager;
-
+	
+	//DI
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
@@ -31,24 +31,6 @@ public class UserServiceImpl implements UserService{
 		this.userDao = userDao;
 	}
 
-	
-	/** 트랜잭션 서비스 추상화
-	public void upgradeLevels() throws Exception{
-		
-		//트랜잭션 시작
-		//new DefaultTransactionDefinition() - transaction 속성 
-		TransactionStatus status = this.transactionManager.getTransaction(new DefaultTransactionDefinition());
-
-		try {
-			upgradeLevelsInternal();
-			this.transactionManager.commit(status);
-		}catch(Exception e) {
-			this.transactionManager.rollback(status);
-			throw e;
-		}
-	}
-	*/
-	
 	@Override
 	public void upgradeLevels() {
 		// TODO Auto-generated method stub
@@ -82,7 +64,8 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public void add(User user) {
 		// TODO Auto-generated method stub
-		
 	}
+	
+	
 	
 }//end UserService

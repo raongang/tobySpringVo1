@@ -118,23 +118,20 @@ public class User {
 		this.password = password;
 	}
 	
-	
-	
 	public String getEmailAddress() {
 		return emailAddress;
 	}
 
-
 	public void setEmailAddress(String emailAddress) {
 		this.emailAddress = emailAddress;
 	}
-
 
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
 		return "id >> " + id + " name >> " + name + " password >> " + password + " emailAddress >> " + emailAddress;
 	}
+	
 	
 	
 }

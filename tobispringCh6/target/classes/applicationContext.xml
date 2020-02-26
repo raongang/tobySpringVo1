@@ -10,16 +10,19 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
 	
-	
-	<!-- DI  -->
 	<bean id="userDao" class="springbook.user.dao.UserDaoImpl">
 		<property name="jdbcTemplate" ref="dataSource" />
 	</bean>
 	
-	<!-- DI -->
-	<bean id="userService" class="springbook.user.service.UserService">
-		<property name="userDao" ref="userDao" />
+	<!-- 데코레이터 -->
+	<bean id="userService" class="springbook.user.service.UserServiceTx">
 		<property name="transactionManager" ref="transactionManager" />
+		<property name="userService" ref="userServiceImpl" />
+	</bean>
+	
+	<!-- 타켓 -->
+	<bean id="userServiceImpl" class="springbook.user.service.UserServiceImpl">
+		<property name="userDao" ref="userDao" />
 	</bean>
 	
 	<!-- global transaction 추상화  -->
@@ -30,7 +33,6 @@
 	<!-- if you want use jta transaction , use down code 
 	<bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager" />
 	-->
-	
 	
 	<!-- DataSource 설정 -->
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
