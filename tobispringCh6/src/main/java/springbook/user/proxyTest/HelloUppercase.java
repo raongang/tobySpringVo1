@@ -30,7 +30,7 @@ public class HelloUppercase implements Hello{
 	@Override
 	public String sayHi(String name) {
 		// TODO Auto-generated method stub
-		return hello.sayHello(name).toUpperCase();
+		return hello.sayHi(name).toUpperCase();
 	}
 
 	@Override
