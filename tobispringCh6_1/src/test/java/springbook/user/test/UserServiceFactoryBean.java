@@ -5,7 +5,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -20,20 +20,21 @@ import org.springframework.transaction.PlatformTransactionManager;
 import springbook.user.dao.UserDao;
 import springbook.user.domain.User;
 import springbook.user.domain.User.UserLevel;
-import springbook.user.service.TransactionHandler;
-import springbook.user.service.UserService;
+import springbook.user.service.TxProxyFactoryBean;
 import springbook.user.service.UserServiceImpl;
 import springbook.user.service.UserServiceTx;
 
 /**
  *   데이터 update중에 에러가 발생했을때, 이전 데이터는 roll-back이 되는지, 그대로 commit이 되는지 
  *   확인하기 위한 테스트 
+ *   
+ *   Dynamic Proxy 와 이를 DI에 등록하기 위한 FactoryBean 설정이후의 테스트 버전.
 */
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="/applicationContext.xml")
-public class UserServiceProxyTest {
+public class UserServiceFactoryBean {
 	//컨테이너가 관리하는 스프링 빈 선언
 	//타입으로 검색, 같은 타입의 빈이 두개라면 필드 이름을 이용해서 찾음. 
 
@@ -42,6 +43,9 @@ public class UserServiceProxyTest {
 	
 	@Autowired
 	private PlatformTransactionManager transactionManager;
+	
+	@Autowired
+	ApplicationContext context;
 
 	
 	public static final int MIN_LOGCOUNT_FOR_SILVER = 50;
@@ -64,24 +68,16 @@ public class UserServiceProxyTest {
 	
 	@Test
 	public void upgradeAllOrNothing() throws Exception {
+		
 		//예외를 발생시킬 사용자의 id를 넣어서 테스트용 UserService 대역 오브젝트를 생성한다.
 		TestUserService testUserSerivce = new TestUserService(users.get(3).getId());
 		
 		testUserSerivce.setUserDao(this.userDao);//useDao를 수동 DI
 		
-		//트랜잭션 핸들러가 필요한 정보와 오브젝트를 DI
-		TransactionHandler txHandler = new TransactionHandler();
-		txHandler.setTarget(testUserSerivce);
-		txHandler.setTransactionManager(transactionManager);
-		txHandler.setPattern("upgradeLevels");
+		UserServiceTx txUserService = new UserServiceTx();
+		txUserService.setTransactionManager(transactionManager);
+		txUserService.setUserService(testUserSerivce);
 		
-		//UserService 인터페이스 타입의 다이나믹 프록시 생성. ( newProxyInstance로만 생성가능 )  - JDK 다이나믹프록시 생성 방법.
-		UserService txUserService = (UserService)Proxy.newProxyInstance(
-				getClass().getClassLoader(), 
-				new Class[] { UserService.class },   //구현할 클래스
-				txHandler); //
-
-		userDao.deleteAll();
 		
 		for(User user : users)  userDao.add(user); 
 		

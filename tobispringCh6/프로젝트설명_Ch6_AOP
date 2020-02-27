@@ -1,4 +1,9 @@
 
+프로젝트 범위
+  : SERVICE와 TRANSACTION의 분리
+  : 효율적인 TRANSACTION의 분리를 위한 PROXY 기법 도입 (데코레이션패턴->LOCAL PROXY->GLOBAL PROXY->DYNAMIC PROXY-> FACTORY BEAN ) 
+
+
 Chapter06 AOP
 
 1. 고립된 단위테스트
