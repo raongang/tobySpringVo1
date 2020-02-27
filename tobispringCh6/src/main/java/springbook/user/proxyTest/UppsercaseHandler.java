@@ -5,9 +5,9 @@ import java.lang.reflect.Method;
 
 /** dynamic handler */
 public class UppsercaseHandler implements InvocationHandler{
-	Hello target;
+	Object target;
 	
-	public UppsercaseHandler(Hello target) {
+	public UppsercaseHandler(Object target) {
 		super();
 		this.target = target;
 	}
@@ -15,10 +15,14 @@ public class UppsercaseHandler implements InvocationHandler{
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		// TODO Auto-generated method stub
-		String ret = (String)method.invoke(target, args);
-		return ret.toUpperCase();
+		Object ret = method.invoke(target, args);
+		
+		//메소드를 선별해서 부가기능 실시.
+		if(ret instanceof String && method.getName().startsWith("say")) {
+			return ((String)ret).toUpperCase();
+		}
+		else {
+			return ret;
+		}
 	}
-	
-	
-
 }

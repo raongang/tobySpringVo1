@@ -27,7 +27,6 @@ public class UserServiceTx implements UserService{
 	public void setUserService(UserService userService) {
 		this.userService = userService;
 	}
-
 	
 	/* DI받은 UserService 오브젝트에 모든 기능을 위임한다. */
 	@Override
@@ -50,9 +49,6 @@ public class UserServiceTx implements UserService{
 			throw e;
 		}
 	}//upgradeLevels
-	
-
-	
 	
 	
 }

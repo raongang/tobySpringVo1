@@ -37,7 +37,6 @@ public class ProxyTest {
 		*/
 		
 		/** 데코레이터 패턴의 단점을 수정한 dynamic proxy */
-		
 		//생성된 다이나믹 프록시 오브젝트는 Hello 인터페이스를 구현하고 있으므로, Hello 타입 캐스팅 무관.
 		Hello dynamicHello = (Hello)Proxy.newProxyInstance(
 				getClass().getClassLoader(),  //동적으로 생성되는 다이나믹 프록시를 클래스의 로딩에 사용할 클래스 로더
@@ -48,4 +47,7 @@ public class ProxyTest {
 		assertThat(dynamicHello.sayHi("Toby"), is("HI TOBY"));
 		assertThat(dynamicHello.sayThankYou("Toby"), is("THANK YOU TOBY"));
 	}//end simpleProxy
+	
+	
+	
 }

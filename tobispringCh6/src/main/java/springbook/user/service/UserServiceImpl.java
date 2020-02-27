@@ -57,6 +57,8 @@ public class UserServiceImpl implements UserService{
 	//레벨 업그레이드 작업 메소드
 	//upgradeLevels 에 생성한 트랜잭션 정보는 트랜잭션 동기화 방법을 토애 userDao에서 알아서 활용한다.
 	protected void upgradeLevel(User user) {
+		
+		System.out.println("UserServiceImpl upgradeLevel enter");
 		user.upgradeLevel();
 		userDao.update(user);
 	}

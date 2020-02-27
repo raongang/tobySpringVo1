@@ -35,7 +35,7 @@ Chapter06 AOP
      - 이를 조금 더 편하게 해주는 것이 java.lang.reflect 안의 클래스들이다.
      - 자바의 코드자체를 추상화해서 접근하도록 만든 것.
      - 자바의 모든 클래스는 그 클래스 자체의 구성정보를 담은 class 타입의 오브젝트를 하나씩 가지고 있다. ( 클래스이름.class, 오브젝트의 getClass() 메소드 호출)
-        
+     
       2-3-1. 사용 예)
         java.lang.reflect.Method lengthMethod = String.class.getMethod("length")
         Method 는 interface
@@ -43,8 +43,19 @@ Chapter06 AOP
         //특정 object에 대한 메소드를 실행
         int length = lengthMethod.invoke(name); // int length = name.length();
         
+     2-3-2. 스프링의 빈 
+       - 내부적으로 리플렉션 API(ex. newInstance())를 이용해서 빈 정의에 나오는 클래스정보를 가지고 디폴트 생성자를 통해 빈 오브젝트를 생성한다.
+       - 리플렉션은 private로 선언된 생성자도 빈으로 등록하면 오브젝트를 만들어준다. 
+         이는, 리플렉션이 private 접근규약을 위반할 수 있는 강력한 기능이 있기 때문이다.
+          하지만 되도록이면 이러한 private 로 된 생성자를 DI하지 않길 바람.
         
-   
+  2-4. FatoryBean
+   - dynamic proxy, TransactionHandler 를 스프링 di 할 방법이 없음.
+   - 스프링은 클래스 정보를 가지고 디폴트 생성자를 통해 오브젝트를 만드는 방법 외에도 빈을 만들수 있는 방법이 있음.
+   - 스프링을 대신해서 오브젝트의 생성로직을 담당하도록 만들어진 특별한 빈.
+   - FactoryBean 인터페이스를 구현하고 이를 스프링 di로 등록하면 Factory Bean으로 동작.
+  
+  
    
      
      

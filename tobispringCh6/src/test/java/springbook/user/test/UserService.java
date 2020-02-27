@@ -30,7 +30,7 @@ import springbook.user.service.UserServiceTx;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="/applicationContext.xml")
-public class UserServiceTest {
+public class UserService {
 	//컨테이너가 관리하는 스프링 빈 선언
 	//타입으로 검색, 같은 타입의 빈이 두개라면 필드 이름을 이용해서 찾음. 
 
