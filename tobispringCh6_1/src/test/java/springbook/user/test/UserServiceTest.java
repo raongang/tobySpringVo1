@@ -11,7 +11,10 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -19,8 +22,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import springbook.user.dao.UserDao;
 import springbook.user.domain.User;
 import springbook.user.domain.User.UserLevel;
+import springbook.user.service.UserService;
 import springbook.user.service.UserServiceImpl;
-import springbook.user.service.UserServiceTx;
 
 /**
  *   데이터 update중에 에러가 발생했을때, 이전 데이터는 roll-back이 되는지, 그대로 commit이 되는지 
@@ -30,7 +33,7 @@ import springbook.user.service.UserServiceTx;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="/applicationContext.xml")
-public class UserService {
+public class UserServiceTest {
 	//컨테이너가 관리하는 스프링 빈 선언
 	//타입으로 검색, 같은 타입의 빈이 두개라면 필드 이름을 이용해서 찾음. 
 
@@ -38,7 +41,7 @@ public class UserService {
 	private UserDao userDao;
 	
 	@Autowired
-	private PlatformTransactionManager transactionManager;
+	private ApplicationContext context;
 
 	
 	public static final int MIN_LOGCOUNT_FOR_SILVER = 50;
@@ -60,16 +63,19 @@ public class UserService {
 	}
 	
 	@Test
+	@DirtiesContext
 	public void upgradeAllOrNothing() throws Exception {
 		
 		//예외를 발생시킬 사용자의 id를 넣어서 테스트용 UserService 대역 오브젝트를 생성한다.
 		TestUserService testUserSerivce = new TestUserService(users.get(3).getId());
-		
 		testUserSerivce.setUserDao(this.userDao);//useDao를 수동 DI
 		
-		UserServiceTx txUserService = new UserServiceTx();
-		txUserService.setTransactionManager(transactionManager);
-		txUserService.setUserService(testUserSerivce);
+		//Get spring proxyFactoryBean 
+		//userServiceBean은 이제 스프링의 ProxyFactoryBean이다.
+		ProxyFactoryBean txProxyFactoryBean = context.getBean("&userService",ProxyFactoryBean.class);
+		
+		txProxyFactoryBean.setTarget(testUserSerivce); //테스트하기 위해 target을 변경.
+		UserService txUserService  = (UserService)txProxyFactoryBean.getObject();
 		
 		userDao.deleteAll();
 		

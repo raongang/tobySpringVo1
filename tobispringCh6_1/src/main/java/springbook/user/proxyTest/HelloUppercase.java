@@ -2,6 +2,7 @@ package springbook.user.proxyTest;
 
 /**
  *   Hello Interface를 구현한 proxy
+ *   
  *   부가기능 추가를 위한 데코레이터 패턴을 적용.
  *   
  *   단점

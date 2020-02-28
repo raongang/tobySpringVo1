@@ -15,11 +15,11 @@
 		<property name="jdbcTemplate" ref="dataSource" />
 	</bean>
 	
-	<!-- 데코레이터 -->
+	<!-- 데코레이터
 	<bean id="userService" class="springbook.user.service.UserServiceTx">
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="userService" ref="userServiceImpl" />
-	</bean>
+	</bean> -->
 	
 	<!-- 타켓 -->
 	<bean id="userServiceImpl" class="springbook.user.service.UserServiceImpl">
@@ -44,17 +44,20 @@
 	</bean>
 	
 	
-	<!-- UserSerivce에 대한 트랜잭션 프록시 팩토리 빈 
-	<bean id="userSerivce" class="springbook.user.service.TxProxyFactoryBean">
+	<!-- factoryBean Test Message -->
+	<bean id="message" class="springbook.user.factoryBeanTest.MessageFactoryBean">
+		<property name="text" value="Factory Bean" />
+	</bean>
+	
+	<!-- UserSerivce에 대한 트랜잭션 프록시 팩토리 빈 -->   
+	<bean id="userService" class="springbook.user.service.TxProxyFactoryBean">
 		<property name="target" ref="userServiceImpl" />
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="pattern" value="upgradeLevels" />
+		<!-- class or interface 이름을 넣어주면 스프링에서 수정자 메소드의 타입을 확인해서 프로퍼티 타입이 class일 경우, 
+			 value로 설정한 이름을 가진 class 오브젝트로 자동변환한다.-->
 		<property name="serviceInterface" value="springbook.user.service.UserService" />
-		
 	</bean>
-	 -->
-	
-	
 		
 		
 </beans>

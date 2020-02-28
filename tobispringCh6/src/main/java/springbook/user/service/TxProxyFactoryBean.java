@@ -24,6 +24,14 @@ public class TxProxyFactoryBean implements FactoryBean<Object>{
 	//다이나믹 프록시를 생성할때마다 필요함.
 	Class<?> serviceInterface; 
 	
+	public Class<?> getServiceInterface() {
+		return serviceInterface;
+	}
+
+	public void setServiceInterface(Class<?> serviceInterface) {
+		this.serviceInterface = serviceInterface;
+	}
+
 	//setter , getter 
 	public void setTarget(Object target) {
 		this.target = target;
@@ -49,8 +57,8 @@ public class TxProxyFactoryBean implements FactoryBean<Object>{
 		
 		return Proxy.newProxyInstance(
 				getClass().getClassLoader(),
-				new Class[] { serviceInterface } ,
-				txHandler);
+				new Class[] { serviceInterface } , //구현할 클래스 ( applicationContext에서 DI )
+				txHandler); //부가기능.
 	}
 
 	@Override

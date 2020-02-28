@@ -5,7 +5,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,8 +19,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import springbook.user.dao.UserDao;
 import springbook.user.domain.User;
 import springbook.user.domain.User.UserLevel;
-import springbook.user.service.TransactionHandler;
-import springbook.user.service.UserService;
 import springbook.user.service.UserServiceImpl;
 import springbook.user.service.UserServiceTx;
 
@@ -33,7 +30,7 @@ import springbook.user.service.UserServiceTx;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="/applicationContext.xml")
-public class UserServiceProxyTest {
+public class UserServiceTest2 {
 	//컨테이너가 관리하는 스프링 빈 선언
 	//타입으로 검색, 같은 타입의 빈이 두개라면 필드 이름을 이용해서 찾음. 
 
@@ -64,23 +61,16 @@ public class UserServiceProxyTest {
 	
 	@Test
 	public void upgradeAllOrNothing() throws Exception {
+		
 		//예외를 발생시킬 사용자의 id를 넣어서 테스트용 UserService 대역 오브젝트를 생성한다.
 		TestUserService testUserSerivce = new TestUserService(users.get(3).getId());
 		
 		testUserSerivce.setUserDao(this.userDao);//useDao를 수동 DI
 		
-		//트랜잭션 핸들러가 필요한 정보와 오브젝트를 DI
-		TransactionHandler txHandler = new TransactionHandler();
-		txHandler.setTarget(testUserSerivce);
-		txHandler.setTransactionManager(transactionManager);
-		txHandler.setPattern("upgradeLevels");
+		UserServiceTx txUserService = new UserServiceTx();
+		txUserService.setTransactionManager(transactionManager);
+		txUserService.setUserService(testUserSerivce);
 		
-		//UserService 인터페이스 타입의 다이나믹 프록시 생성. ( newProxyInstance로만 생성가능 )  - JDK 다이나믹프록시 생성 방법.
-		UserService txUserService = (UserService)Proxy.newProxyInstance(
-				getClass().getClassLoader(), 
-				new Class[] { UserService.class },   //구현할 클래스
-				txHandler); //
-
 		userDao.deleteAll();
 		
 		for(User user : users)  userDao.add(user); 
@@ -142,6 +132,9 @@ public class UserServiceProxyTest {
 			assertThat(userUpdate.getUserLevel(),is(user.getUserLevel()));
 		}
 	}//end checkLevelUpgrade
+
+
+
 }
 
 

@@ -3,6 +3,24 @@
 
   Ch6-1
    - 스프링에서 제공하는 ProxyFactoryBean에 대해 다룸
-     
 
 
+Proxy
+
+proxy의 목적에 따른 구분
+ 1. 클라이언트가 타켓에 접근하는 방법을 제어
+ 2. 타켓에 부가적인 기능을 부여
+ 
+디자인패턴 관점의 proxy 
+  데코레이터 패턴 : 타켓에 부가적인 기능을 부여하면서 프록시로 동작.
+
+
+AOP용어
+
+ 1. Advice - MethodInterceptor처럼 target object에 종속되지 않는 순수한 부가기능을 담은 오브젝트(UppercaseAdvice)를 스프링에서 어드바이스라고 함.
+ 2.Point Cut - 부가기능 적용 대상 메소드 선정 방법.
+ 3. Advisor : point cut(메소드선정 알고리즘) + Adivce(부가기능) 
+  
+ 
+ 
+ 

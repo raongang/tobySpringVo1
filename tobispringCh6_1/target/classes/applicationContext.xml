@@ -10,15 +10,8 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
 	
-
 	<bean id="userDao" class="springbook.user.dao.UserDaoImpl">
 		<property name="jdbcTemplate" ref="dataSource" />
-	</bean>
-	
-	<!-- 데코레이터 -->
-	<bean id="userService" class="springbook.user.service.UserServiceTx">
-		<property name="transactionManager" ref="transactionManager" />
-		<property name="userService" ref="userServiceImpl" />
 	</bean>
 	
 	<!-- 타켓 -->
@@ -31,10 +24,6 @@
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 	
-	<!-- if you want use jta transaction , use down code 
-	<bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager" />
-	-->
-	
 	<!-- DataSource 설정 -->
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
 		<property name="driverClass" value="oracle.jdbc.driver.OracleDriver" />
@@ -42,23 +31,36 @@
 		<property name="username" value="tobi" />
 		<property name="password" value="spring" />
 	</bean>
+
 	
-	<!-- FactoryBean Test -->
-	<bean id="message"  class="springbook.user.factoryBeanTest.MessageFactoryBean">
-		<property name="text" value="Factory Bean" />
+	<!-- Spring이 제공하는 Advice 설정 -->
+	<bean id="transactionAdvice" class="springbook.user.service.TransactionAdvice">
+		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 	
-	<!-- UserSerivce에 대한 트랜잭션 프록시 팩토리 빈 
-	<bean id="userSerivce" class="springbook.user.service.TxProxyFactoryBean">
+	<!-- Spring이 제공하는 ProxyFactoryBean Pointcut 설정 -->
+	<bean id="transactionPointcut" class="org.springframework.aop.support.NameMatchMethodPointcut">
+		<property name="mappedName" value="upgrade*" />
+	</bean>
+		
+	<!-- Spring이 제공하는 ProxyFactoryBean Advisor 설정 -->
+	<bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
+		<property name="advice" ref="transactionAdvice" />
+		<property name="pointcut" ref="transactionPointcut" />
+	</bean>
+	
+	<!-- Spring이 제공하는 ProxyFactoryBean 등록 -->
+	<bean id="userService" class="org.springframework.aop.framework.ProxyFactoryBean">
 		<property name="target" ref="userServiceImpl" />
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="pattern" value="upgradeLevels" />
-		<property name="serviceInterface" value="springbook.user.service.UserService" />
-		
+		<!-- advice와 advisor를 동시에 설정할 수 있는 프로퍼티. 리스트에 advice나 advisor의 빈 아이디를 값으로 넣어주면 된다.
+		     기존의 ref attribute를 사용하는 DI와는 방식이 다름을 주의한다.
+		 -->
+		<property name="interceptorNames">
+		 	<list>
+		 		<value>transactionAdvisor</value>
+		 	</list>
+		</property>
 	</bean>
-	 -->
-	
-	
-		
-		
+     
+     		
 </beans>
