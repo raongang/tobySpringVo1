@@ -32,22 +32,12 @@
 		<property name="password" value="spring" />
 	</bean>
 
-	
-	<!-- Spring이 제공하는 Advice 설정 -->
-	<bean id="transactionAdvice" class="springbook.user.service.TransactionAdvice">
-		<property name="transactionManager" ref="transactionManager" />
-	</bean>
-	
-	<!-- Spring이 제공하는 ProxyFactoryBean Pointcut 설정 -->
-	<bean id="transactionPointcut" class="org.springframework.aop.support.NameMatchMethodPointcut">
-		<property name="mappedName" value="upgrade*" />
-	</bean>
-		
-	<!-- Spring이 제공하는 ProxyFactoryBean Advisor 설정 -->
-	<bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
-		<property name="advice" ref="transactionAdvice" />
-		<property name="pointcut" ref="transactionPointcut" />
-	</bean>
+
+	<!-- 아래 방식의 단점
+		부가기능의 적용이 필요한 타켓오브젝트마다 거의 비슷한 내용의 ProxyFactoryBean 빈 설정정보를 추가해준다. 
+		설정을 매번 복사하고 붙이고 target프로퍼티의 내용을 수정해야 함.
+		결론적으로 target 프로퍼티만 다르고 나머지 bean class, advice, pointcut의 설정이 동일하다.
+	 -->
 	
 	<!-- Spring이 제공하는 ProxyFactoryBean 등록 -->
 	<bean id="userService" class="org.springframework.aop.framework.ProxyFactoryBean">
@@ -61,6 +51,23 @@
 		 	</list>
 		</property>
 	</bean>
+
+	<!-- Spring이 제공하는 ProxyFactoryBean Advisor 설정 -->
+	<bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
+		<property name="advice" ref="transactionAdvice" />
+		<property name="pointcut" ref="transactionPointcut" />
+	</bean>
+		
+	<!-- Spring이 제공하는 Advice 설정 -->
+	<bean id="transactionAdvice" class="springbook.user.service.TransactionAdvice">
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+	
+	<!-- Spring이 제공하는 ProxyFactoryBean Pointcut 설정 -->
+	<bean id="transactionPointcut" class="org.springframework.aop.support.NameMatchMethodPointcut">
+		<property name="mappedName" value="upgrade*" />
+	</bean>
+	
      
      		
 </beans>
