@@ -36,6 +36,10 @@ public class TxProxyFactoryBean implements FactoryBean<Object>{
 	public void setTarget(Object target) {
 		this.target = target;
 	}
+	
+	public Object getTarget() {
+		return target;
+	}
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;

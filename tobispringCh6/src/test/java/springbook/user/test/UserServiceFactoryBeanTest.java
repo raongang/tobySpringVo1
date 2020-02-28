@@ -30,7 +30,7 @@ import springbook.user.service.UserServiceImpl;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="/applicationContext.xml")
-public class UserServiceTest {
+public class UserServiceFactoryBeanTest {
 	//컨테이너가 관리하는 스프링 빈 선언
 	//타입으로 검색, 같은 타입의 빈이 두개라면 필드 이름을 이용해서 찾음. 
 
@@ -60,17 +60,20 @@ public class UserServiceTest {
 	}
 	
 	@Test
-	@DirtiesContext //다이나믹 프록시 팩토리 빈을 직접 만들어서 사용할 때는 없앴다가 다시 등장한 컨텍스트 무효화 애노테이션
+	/* 다이나믹 프록시 팩토리 빈을 직접 만들어서 사용할 때는 없앴다가 다시 등장한 컨텍스트 무효화 애노테이션 
+	 * 원래는 applicationContext.xml에서 ProxyFactoryBean에 의해서 TxProxyFactoryBean의 getObject()의 의해
+	 * 생성된 dynamic proxy object가 생성되어야 하는데 이러면 target설정을 할수 없어서 이를 무시하고 
+	 * ProxyFactoryBean 자체를 가져오기 위해 선언.
+	*/
+	@DirtiesContext 
 	public void upgradeAllOrNothing() throws Exception {
 		
 		//예외를 발생시킬 사용자의 id를 넣어서 테스트용 UserService 대역 오브젝트를 생성한다.
 		TestUserService testUserSerivce = new TestUserService(users.get(3).getId());
 		testUserSerivce.setUserDao(this.userDao);//useDao를 수동 DI
 		
-		
 		TxProxyFactoryBean txProxyFactoryBean = context.getBean("&userService",TxProxyFactoryBean.class);
 		txProxyFactoryBean.setTarget(testUserSerivce);
-		
 		//변경된 target 설정을 이용해서 트랜잭션 다이나믹 프록시 오브젝트를 다시 생성.
 		UserService txUserService = (UserService)txProxyFactoryBean.getObject();
 		
