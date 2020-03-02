@@ -51,6 +51,8 @@
 			<artifactId>spring-aop</artifactId>
 			<version>${org.springframework-version}</version>
 		</dependency>
+	
+		
 		
 		<!-- AOP 트랜잭션 처리를 위함 -->
 		<dependency>

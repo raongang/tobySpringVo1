@@ -16,7 +16,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import springbook.user.proxyTest.Hello;
 import springbook.user.proxyTest.HelloTarget;
 
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="/applicationContext.xml")
 public class ProxyFactoryBeanTest {
@@ -42,6 +41,7 @@ public class ProxyFactoryBeanTest {
 	 *      - MethodInterceptor 에 method정보와 타켓오브젝트가 담긴 MethodInvocation Object가 함께 전달되므로..
 	*/
 	static class UppercaseAdvice implements MethodInterceptor{
+		
 		@Override
 		public Object invoke(MethodInvocation invocation) throws Throwable {
 			
@@ -53,6 +53,7 @@ public class ProxyFactoryBeanTest {
 			return ret.toUpperCase();
 		}
 	}//end UppercaseAdvice
+	
 	
 	/** pointCut을 적용한 ProxyFactoryBean */
 	@Test
@@ -69,7 +70,11 @@ public class ProxyFactoryBeanTest {
 		/*  
 		 * 포인트컷과 Advice를 Advisor로 묶어서 추가
 		 *  - ProxyFactoryBean에 여러개의 어드바이스와 포인컷이 추가될수 있기 때문에 하나로 묶어서 나간다. 
-		 *  Advisor : Advice와 pointcut을 묶은 오브젝트 */
+		 *  Advisor : Advice와 pointcut을 묶은 오브젝트
+		 *  
+		 *   new DefaultPointcutAdvisor() : Advisor 인터페이스 구현.
+		 */
+		
 		pfBean.addAdvisor(new DefaultPointcutAdvisor(pointcut,new UppercaseAdvice()));
 		
 		Hello proxiedHello = (Hello)pfBean.getObject();
@@ -77,7 +82,8 @@ public class ProxyFactoryBeanTest {
 		assertThat(proxiedHello.sayHello("Toby"), is("HELLO TOBY"));
 		assertThat(proxiedHello.sayHi("Toby"), is("HI TOBY"));
 		assertThat(proxiedHello.sayThankYou("Toby"), is("Thank You Toby")); //pointcut 조건에 안맞음.
-		
 	}
+	
+	
 	
 }

@@ -14,11 +14,6 @@
 		<property name="jdbcTemplate" ref="dataSource" />
 	</bean>
 	
-	<!-- 타켓 -->
-	<bean id="userServiceImpl" class="springbook.user.service.UserServiceImpl">
-		<property name="userDao" ref="userDao" />
-	</bean>
-	
 	<!-- global transaction 추상화  -->
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
@@ -32,27 +27,16 @@
 		<property name="password" value="spring" />
 	</bean>
 
-
-	<!-- 아래 방식의 단점
-		부가기능의 적용이 필요한 타켓오브젝트마다 거의 비슷한 내용의 ProxyFactoryBean 빈 설정정보를 추가해준다. 
-		설정을 매번 복사하고 붙이고 target프로퍼티의 내용을 수정해야 함.
-		결론적으로 target 프로퍼티만 다르고 나머지 bean class, advice, pointcut의 설정이 동일하다.
-	 -->
-	
-	<!-- Spring이 제공하는 ProxyFactoryBean 등록 -->
-	<bean id="userService" class="org.springframework.aop.framework.ProxyFactoryBean">
-		<property name="target" ref="userServiceImpl" />
-		<!-- advice와 advisor를 동시에 설정할 수 있는 프로퍼티. 리스트에 advice나 advisor의 빈 아이디를 값으로 넣어주면 된다.
-		     기존의 ref attribute를 사용하는 DI와는 방식이 다름을 주의한다.
-		 -->
-		<property name="interceptorNames">
-		 	<list>
-		 		<value>transactionAdvisor</value>
-		 	</list>
-		</property>
+	<bean id="userService" class="springbook.user.service.UserServiceImpl">
+		<property name="userDao" ref="userDao" />
 	</bean>
-
-	<!-- Spring이 제공하는 ProxyFactoryBean Advisor 설정 -->
+	
+	<!-- 자동 프록시 생성기 등록  - 등록된 bean중에 Advisor 인터페이스를 구현한 모든 것을 검색. 
+	     즉, bean id="transactionAdvisor" 를 찾아온다.
+	-->
+	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" />
+	
+	<!-- Spring이 제공하는 Advisor 설정 -->
 	<bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
 		<property name="advice" ref="transactionAdvice" />
 		<property name="pointcut" ref="transactionPointcut" />
@@ -63,12 +47,17 @@
 		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 	
-	<!-- Spring이 제공하는 ProxyFactoryBean Pointcut 설정 -->
-	<bean id="transactionPointcut" class="org.springframework.aop.support.NameMatchMethodPointcut">
-		<property name="mappedName" value="upgrade*" />
+	<!-- 자동 프록시 포인트컷 설정 -->
+	<bean id="transactionPointcut" class="springbook.user.service.NameMatchClassMethodPointcut">
+		<property name="mappedClassName" value="*ServiceImpl" /><!-- 클래스 이름 패턴(※ 대소문자 구분) -->
+		<property name="mappedName" value="upgrade*" /> <!-- 메소드 이름 패턴 -->
 	</bean>
-	
-	
      
+    <!-- 자동프록시 테스트 빈 등록 
+		스태틱멤버클래스는 $로 지정한다.
+		parent : 프로퍼티 정의를 포함해서 userService빈의 설정을 상속받는다.    	
+    -->
+    <bean id="testUserService" class="springbook.user.test.UserServiceTest$TestUserServiceImpl" parent="userService" />
+    
      		
 </beans>

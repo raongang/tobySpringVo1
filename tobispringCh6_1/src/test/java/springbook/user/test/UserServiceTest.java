@@ -17,7 +17,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.PlatformTransactionManager;
 
 import springbook.user.dao.UserDao;
 import springbook.user.domain.User;
@@ -39,9 +38,10 @@ public class UserServiceTest {
 
 	@Autowired
 	private UserDao userDao;
-	
+
+	/* 같은 타입의 빈이 2개이므로, 필드이름을 기준으로 주입될 빈이 결정된다. 자동 프록시 생성기에 의해 트랜잭션 부가기능이 testUserService 빈에 적용되었는지를 확인하기 위함.*/
 	@Autowired
-	private ApplicationContext context;
+	UserService testUserService;
 
 	
 	public static final int MIN_LOGCOUNT_FOR_SILVER = 50;
@@ -63,27 +63,15 @@ public class UserServiceTest {
 	}
 	
 	@Test
-	@DirtiesContext
 	public void upgradeAllOrNothing() throws Exception {
-		
-		//예외를 발생시킬 사용자의 id를 넣어서 테스트용 UserService 대역 오브젝트를 생성한다.
-		TestUserService testUserSerivce = new TestUserService(users.get(3).getId());
-		testUserSerivce.setUserDao(this.userDao);//useDao를 수동 DI
-		
-		//Get spring proxyFactoryBean 
-		//userServiceBean은 이제 스프링의 ProxyFactoryBean이다.
-		ProxyFactoryBean txProxyFactoryBean = context.getBean("&userService",ProxyFactoryBean.class);
-		
-		txProxyFactoryBean.setTarget(testUserSerivce); //테스트하기 위해 target을 변경.
-		UserService txUserService  = (UserService)txProxyFactoryBean.getObject();
-		
+
 		userDao.deleteAll();
 		
 		for(User user : users)  userDao.add(user); 
 		
 		try {
 			//TestUserSerivce는 업그레이드 작업중에 예외가 발생해야 함. 정상 종료라면 문제 있으니 실패.
-			txUserService.upgradeLevels();
+			this.testUserService.upgradeLevels();
 			fail("TestUserSerivceException expected"); //JUnit 테스트 결과를 무조건 fail로 함 ( ex. java.lang.AssertionError:message )
 		}catch(TestUserServiceException e) {
 			//TestUserSerivce가 던져주는 예외를 잡아서 계속 진행되게 한다. 그외는 실패처리 
@@ -92,36 +80,22 @@ public class UserServiceTest {
 		checkLevelUpgrade(users.get(1),false);
 	}
 	
-	
-	
 	/**  테스트를 위한 UserService 대역 생성 
 	 *         ※  보통 오버라이딩을 하기 위해 class파일을 별도로 만들어서 상속하는데 테스트용이라면 다음과 같이 inner class중의 한
 	 *     종류인 nested class를 이용하면 편함. 
 	 *        
 	 */
-	static class TestUserService extends UserServiceImpl{
-		private String id;
-		
-		//예제를 발생시킬 User 오브젝트의 id를 지정할 수 있게 만든다.
-		private TestUserService(String id) {
-			this.id = id;
-		}
-
+	
+	//포인트컷의 클래스필터에 선정되도록 이름 변경
+	static class TestUserServiceImpl extends UserServiceImpl{
+		private String id = "madnite1"; //테스트 픽스처의 user(3)의 id값 고정.
+	
 		//UserService의 메소드 오버라이딩
 		@Override
 		protected void upgradeLevel(User user) { 
 			//지정된 id의 User 오브젝트가 발견되면 예외를 던져서 강제로 작업을 중지시킨다.
-			System.out.println("this.id >> " + this.id);
-			System.out.println("user.getId() : " + user.getId());
-			
 			if(user.getId().equals(this.id)) throw new TestUserServiceException();
-			
 			super.upgradeLevel(user);
-		}
-
-		
-		public static void printTest() {
-			System.out.println("HERE IS CALL");
 		}
 	}
 	
@@ -129,7 +103,6 @@ public class UserServiceTest {
 	
 	//upgraded - 어떤 레벨로 바뀔 것인가가 아니라, 다음 레벨로 업그레이드 될것인가 아닌가를 지정.
 	private void checkLevelUpgrade(User user, boolean upgraded) {
-		System.out.println("checkLevelUpgrade");
 		User userUpdate = userDao.get(user.getId());
 		
 		if(upgraded) { //업데이트 일어났는지 확인

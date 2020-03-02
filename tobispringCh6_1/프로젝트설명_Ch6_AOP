@@ -17,10 +17,36 @@ proxy의 목적에 따른 구분
 
 AOP용어
 
- 1. Advice - MethodInterceptor처럼 target object에 종속되지 않는 순수한 부가기능을 담은 오브젝트(UppercaseAdvice)를 스프링에서 어드바이스라고 함.
- 2.Point Cut - 부가기능 적용 대상 메소드 선정 방법.
- 3. Advisor : point cut(메소드선정 알고리즘) + Adivce(부가기능) 
+ 1. Advice 
+  - MethodInterceptor처럼 target object에 종속되지 않는 순수한 부가기능을 담은 오브젝트(UppercaseAdvice)를 스프링에서 어드바이스라고 함.
+ 
+ 2.Point Cut 
+  - 부가기능 적용 대상 메소드 선정 방법.
+ 
+ 3. Point Cut interface 구조
+ 
+    public interface Pointcut{
+    	ClassFilter getClassFilter(); //프록시를 적용할 클래스인지 확인해준다.
+    	MehtodMatcher getMethodMatcher(); //어드바이스를 적용할 메소드인지 확인한다.
+    }
+            
+ 3. Advisor 
+  - point cut(메소드선정 알고리즘) + Adivce(부가기능) 
+
+
+빈 후처리기를 이용한 자동프록시 생성
+
+1. dynamic proxy, TransactionHandler 를 스프링 di 할 방법이 없어서 ProxyFactoryBean 을 생성해서 이용한다.
+  -> ProxyFactoryBean 설정 부분이 중복된다.
+  -> 빈 후처리기를 이용
   
+  
+2. 빈 후처리기 
+  2-1.  BeanPostProcessor Interface를 구현해서 만드는 빈 후처리기.
+      ㄴ 스프링빈 오브젝트 생성이후 이를 다시 가공할수 있게 해줌.
+      ㄴ 종류 : DefaultAdvisorAutoProxyCreator 
+  2-2. DefaultAdvisorAutoProxyCreator
+      - 등록방법 : 빈 후처리기 자체를 Bean으로 등록
  
  
  
