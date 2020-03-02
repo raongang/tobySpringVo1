@@ -56,7 +56,6 @@ public class DynamicProxyTest {
 		assertThat(dynamicHello.sayThankYou("Toby"), is("THANK YOU TOBY"));
 	}//end simpleProxy test
 	
-	
 	@Test
 	public void classNamePointcutAdvisor() {
 		
@@ -86,7 +85,6 @@ public class DynamicProxyTest {
 		
 		class HelloToby extends HelloTarget{};
 		checkAdviced(new HelloToby(),classMethodPointcut, true);
-		
 	}//end test
 	
 	
