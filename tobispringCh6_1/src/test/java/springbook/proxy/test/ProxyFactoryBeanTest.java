@@ -83,7 +83,4 @@ public class ProxyFactoryBeanTest {
 		assertThat(proxiedHello.sayHi("Toby"), is("HI TOBY"));
 		assertThat(proxiedHello.sayThankYou("Toby"), is("Thank You Toby")); //pointcut 조건에 안맞음.
 	}
-	
-	
-	
 }

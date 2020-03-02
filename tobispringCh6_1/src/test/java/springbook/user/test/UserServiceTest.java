@@ -100,7 +100,6 @@ public class UserServiceTest {
 	}
 	
 	static class TestUserServiceException extends RuntimeException{ }
-	
 	//upgraded - 어떤 레벨로 바뀔 것인가가 아니라, 다음 레벨로 업그레이드 될것인가 아닌가를 지정.
 	private void checkLevelUpgrade(User user, boolean upgraded) {
 		User userUpdate = userDao.get(user.getId());
