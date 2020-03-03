@@ -29,6 +29,7 @@ public class DynamicProxyTest {
 
 	@Test
 	public void simpleProxy() {
+		
 		/**
 		Hello hello = new HelloTarget(); //target은 interface를 통해 접근하는 습관.
 		assertThat(hello.sayHello("Toby"), is("Hello Toby"));
@@ -124,6 +125,5 @@ public class DynamicProxyTest {
 			return ret.toUpperCase();
 		}
 	}//end UppercaseAdvice
-	
 	
 }//end class

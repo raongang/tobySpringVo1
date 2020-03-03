@@ -4,7 +4,6 @@
   Ch6-1
    - 스프링에서 제공하는 ProxyFactoryBean에 대해 다룸
 
-
 Proxy
 
 proxy의 목적에 따른 구분
@@ -13,7 +12,6 @@ proxy의 목적에 따른 구분
  
 디자인패턴 관점의 proxy 
   데코레이터 패턴 : 타켓에 부가적인 기능을 부여하면서 프록시로 동작.
-
 
 AOP용어
 
@@ -40,13 +38,19 @@ AOP용어
   -> ProxyFactoryBean 설정 부분이 중복된다.
   -> 빈 후처리기를 이용
   
-  
 2. 빈 후처리기 
   2-1.  BeanPostProcessor Interface를 구현해서 만드는 빈 후처리기.
       ㄴ 스프링빈 오브젝트 생성이후 이를 다시 가공할수 있게 해줌.
       ㄴ 종류 : DefaultAdvisorAutoProxyCreator 
   2-2. DefaultAdvisorAutoProxyCreator
       - 등록방법 : 빈 후처리기 자체를 Bean으로 등록
+
+   
  
+3. 포인트컷 표현식
+  3-1. AspectJ포인트컷 표현식 : AspectJExpressionPointcut 클래스 사용
+  3-2. 형식
+    
+       
  
- 
+  

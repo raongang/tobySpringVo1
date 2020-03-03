@@ -9,19 +9,17 @@ public class NameMatchClassMethodPointcut extends NameMatchMethodPointcut{
 	
 	public void setMappedClassName(String mappedClassName) {
 		
-		System.out.println("mappedClassName : " + mappedClassName);
-		
 		//mappedClassName - 모든 class를 다 허용하던 default class filter를 프로퍼티로 받은 클래스 이름을 
 		//이용해서 필터를 만들어 덮어씌운다.
 		this.setClassFilter(new SimpleClassFilter(mappedClassName));
 	}
-	
 	static class SimpleClassFilter implements ClassFilter{
 		String mappedName;
 		
-		private SimpleClassFilter(String mappedClassName) {
-			this.mappedName = mappedClassName;
+		private SimpleClassFilter(String mappedName) {
+			this.mappedName =  mappedName;
 		}
+		
 		
 		public boolean matches(Class<?> clazz) {
 			// TODO Auto-generated method stub
@@ -29,5 +27,5 @@ public class NameMatchClassMethodPointcut extends NameMatchMethodPointcut{
 			// *name, name*, *name* 모두 지원.
 			return PatternMatchUtils.simpleMatch(mappedName,clazz.getSimpleName());
 		}
-	}
+	}//end simpleClassFilter
 }

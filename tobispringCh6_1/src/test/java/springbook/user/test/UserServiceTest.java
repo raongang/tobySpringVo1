@@ -1,4 +1,3 @@
-
 package springbook.user.test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -28,21 +27,18 @@ import springbook.user.service.UserServiceImpl;
  *   데이터 update중에 에러가 발생했을때, 이전 데이터는 roll-back이 되는지, 그대로 commit이 되는지 
  *   확인하기 위한 테스트 
 */
-
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="/applicationContext.xml")
 public class UserServiceTest {
+
 	//컨테이너가 관리하는 스프링 빈 선언
 	//타입으로 검색, 같은 타입의 빈이 두개라면 필드 이름을 이용해서 찾음. 
-
 	@Autowired
 	private UserDao userDao;
 
 	/* 같은 타입의 빈이 2개이므로, 필드이름을 기준으로 주입될 빈이 결정된다. 자동 프록시 생성기에 의해 트랜잭션 부가기능이 testUserService 빈에 적용되었는지를 확인하기 위함.*/
 	@Autowired
 	UserService testUserService;
-
 	
 	public static final int MIN_LOGCOUNT_FOR_SILVER = 50;
 	public static final int MIN_RECOMMEND_FOR_GOLD = 30;
@@ -64,7 +60,6 @@ public class UserServiceTest {
 	
 	@Test
 	public void upgradeAllOrNothing() throws Exception {
-
 		userDao.deleteAll();
 		
 		for(User user : users)  userDao.add(user); 
@@ -95,7 +90,7 @@ public class UserServiceTest {
 		protected void upgradeLevel(User user) { 
 			//지정된 id의 User 오브젝트가 발견되면 예외를 던져서 강제로 작업을 중지시킨다.
 			if(user.getId().equals(this.id)) throw new TestUserServiceException();
-			super.upgradeLevel(user);
+			super.upgradeLevel(user); 
 		}
 	}
 	
@@ -110,6 +105,12 @@ public class UserServiceTest {
 			assertThat(userUpdate.getUserLevel(),is(user.getUserLevel()));
 		}
 	}//end checkLevelUpgrade
+	
+	//자동생성된 프록시 확인
+	@Test
+	public void advisorAutoProxyCreator() {
+		assertThat(testUserService,is(java.lang.reflect.Proxy.class)); //프록시로 변경된 오브젝트인지 확인.
+	}
 }
 
 

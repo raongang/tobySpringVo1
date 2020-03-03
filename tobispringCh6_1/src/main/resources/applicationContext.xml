@@ -10,6 +10,7 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
 	
+	
 	<bean id="userDao" class="springbook.user.dao.UserDaoImpl">
 		<property name="jdbcTemplate" ref="dataSource" />
 	</bean>
@@ -47,17 +48,23 @@
 		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 	
-	<!-- 자동 프록시 포인트컷 설정 -->
+	<!-- 자동 프록시 포인트컷 설정
+	     aspectJ이용에 따라 NameMatchClassMethodPointcut.java도 삭제해도 무관.
 	<bean id="transactionPointcut" class="springbook.user.service.NameMatchClassMethodPointcut">
-		<property name="mappedClassName" value="*ServiceImpl" /><!-- 클래스 이름 패턴(※ 대소문자 구분) -->
-		<property name="mappedName" value="upgrade*" /> <!-- 메소드 이름 패턴 -->
-	</bean>
+		<property name="mappedClassName" value="*ServiceImpl" />
+		<property name="mappedName" value="upgrade*" />
+	</bean>-->
+	
+	
+	 <bean id="transactionPointcut" class="org.springframework.aop.aspectj.AspectJExpressionPointcut">
+	 	<property name="expression" value="execution(* *..*ServiceImpl.upgrade*(..)))" />
+	 </bean>
      
     <!-- 자동프록시 테스트 빈 등록 
 		스태틱멤버클래스는 $로 지정한다.
 		parent : 프로퍼티 정의를 포함해서 userService빈의 설정을 상속받는다.    	
     -->
     <bean id="testUserService" class="springbook.user.test.UserServiceTest$TestUserServiceImpl" parent="userService" />
-    
+	    
      		
 </beans>

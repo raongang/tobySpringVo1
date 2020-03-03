@@ -6,8 +6,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
-/** Spring이 제공하는 ProxyFactoryBean 적용 */
-
 //MethodInterceptor - spring advice interface 구현
 public class TransactionAdvice implements MethodInterceptor{
 	
@@ -34,7 +32,4 @@ public class TransactionAdvice implements MethodInterceptor{
 			throw e;
 		}
 	}
-
-
-	
 }
