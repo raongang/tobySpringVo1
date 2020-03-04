@@ -35,7 +35,6 @@
 	    아래 나누어진 부분이 aop namespace를 이용하여 편하게 정리됨.
 	    aop:config -> aop 설정을 담는 부모 태크. 필요에 따라 AspectJAdvisorAutoProxyCreate를 빈으로 등록해준다.
 	 -->
-	
 	<aop:config>
 		<!-- 
 		<aop:pointcut id="transactionPointcut" expression="execution(* *..*ServiceImpl.upgrade*(..)))" />
@@ -73,5 +72,12 @@
     <bean id="testUserService" class="springbook.user.test.UserServiceTest$TestUserService" parent="userService" />
 	
 	
+	<!-- 자동 프록시 포인트컷 설정(aspectJ이용에 따라 NameMatchClassMethodPointcut.java도 삭제해도 무관.)
+	<bean id="transactionPointcut" class="springbook.user.service.NameMatchClassMethodPointcut">
+		<property name="mappedClassName" value="*ServiceImpl" />
+		<property name="mappedName" value="upgrade*" />
+	</bean>
+	-->
+		
      		
 </beans>

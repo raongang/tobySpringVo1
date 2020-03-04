@@ -30,7 +30,6 @@ public class ProxyFactoryBeanTest {
 		//FactoryBean이므로, getObject()로 생성된 프록시를 가져온다.
 		//Hello interface type의 proxy
 		Hello proxiedHello = (Hello)pfBean.getObject();
-		
 		assertThat(proxiedHello.sayHello("Toby"), is("HELLO TOBY"));
 		assertThat(proxiedHello.sayHi("Toby"), is("HI TOBY"));
 		assertThat(proxiedHello.sayThankYou("Toby"), is("THANK YOU TOBY"));
@@ -44,7 +43,6 @@ public class ProxyFactoryBeanTest {
 		
 		@Override
 		public Object invoke(MethodInvocation invocation) throws Throwable {
-			
 			/* 리플렉션의 Method와 달리 메소드 실행시 타켓 오브젝트를 전달할 필요가 없다.
 			 * JDK의 dynamic proxy의 부가기능을 제공하는 InvocationHandler을 구현한 UppsercaseHandler에도 타켓이 존재하지만,
 			   MethodInvocation은 메소드 정보와 함께 타켓 오브젝트를 알고 있기 때문에 타켓정보가 없다.

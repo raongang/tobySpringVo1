@@ -8,7 +8,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
-
+//advice
+// aop에서는 MethodInterceptor를 구현한다.
 public class TransactionHandler implements InvocationHandler{
 
 	private Object target; //부가기능을 제공할 타켓 오브젝트 

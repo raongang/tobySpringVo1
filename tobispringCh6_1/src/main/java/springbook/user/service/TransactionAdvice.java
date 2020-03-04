@@ -7,6 +7,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 //MethodInterceptor - spring advice interface 구현
+//advice.
 public class TransactionAdvice implements MethodInterceptor{
 	
 	private PlatformTransactionManager transactionManager; //트랜잭션 기능을 제공하는데 필요한 트랜잭션 매니저
@@ -18,16 +19,16 @@ public class TransactionAdvice implements MethodInterceptor{
 	//MethodInvocation - target을 호출하는 기능을 가진 콜백오브젝트를 프록시로부터 받는다. 덕분에 advice는 특정 타켓에 의존하지 않고 재 사용가능.
 	
 	/**
-	 *  DefaultTransactionDefinition()의 정체
-	 *    ㄴ 
+	 *   TransactionDefinition interface
+	 *     ㄴ  DefaultTransactionDefinition
+	 *     
+	 *    동작방식 4가지 속성
 	 * 
 	 * */
 	@Override
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 		// TODO Auto-generated method stub
-		
 		TransactionStatus status = this.transactionManager.getTransaction(new DefaultTransactionDefinition());
-		
 		try {
 			// 콜백을 호출해서 타켓의 메소드를 실행한다. 타켓메소드 호출 전후로, 필요한 부가기능을 넣을 수 있다.
 			Object ret = invocation.proceed();
