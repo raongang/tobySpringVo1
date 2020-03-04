@@ -16,6 +16,12 @@ public class TransactionAdvice implements MethodInterceptor{
 	}
 
 	//MethodInvocation - target을 호출하는 기능을 가진 콜백오브젝트를 프록시로부터 받는다. 덕분에 advice는 특정 타켓에 의존하지 않고 재 사용가능.
+	
+	/**
+	 *  DefaultTransactionDefinition()의 정체
+	 *    ㄴ 
+	 * 
+	 * */
 	@Override
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 		// TODO Auto-generated method stub

@@ -29,7 +29,7 @@ public class ProxyTest {
 		
 		// 데코레이터 패턴 
 		// proxy를 통해 target object에 접근하도록한다.
-		
+		// HelloUppercase가 target인 HelloTarget에 부가 기능을 추가한 proxy가 되는것임.
 		Hello proxiedHello = new HelloUppercase(new HelloTarget());
 		assertThat(proxiedHello.sayHello("Toby"), is("HELLO TOBY"));
 		assertThat(proxiedHello.sayHi("Toby"), is("HI TOBY"));

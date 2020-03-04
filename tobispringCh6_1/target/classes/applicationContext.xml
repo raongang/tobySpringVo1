@@ -10,7 +10,6 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
 	
-	
 	<bean id="userDao" class="springbook.user.dao.UserDaoImpl">
 		<property name="jdbcTemplate" ref="dataSource" />
 	</bean>
@@ -32,39 +31,47 @@
 		<property name="userDao" ref="userDao" />
 	</bean>
 	
-	<!-- 자동 프록시 생성기 등록  - 등록된 bean중에 Advisor 인터페이스를 구현한 모든 것을 검색. 
+	<!-- aop namespace를 이용한 선언
+	    아래 나누어진 부분이 aop namespace를 이용하여 편하게 정리됨.
+	    aop:config -> aop 설정을 담는 부모 태크. 필요에 따라 AspectJAdvisorAutoProxyCreate를 빈으로 등록해준다.
+	 -->
+	
+	<aop:config>
+		<!-- 
+		<aop:pointcut id="transactionPointcut" expression="execution(* *..*ServiceImpl.upgrade*(..)))" />
+		<aop:advisor advice-ref="transactionAdvice"  pointcut-ref="transactionPointcut"/>
+		 -->
+		 <aop:advisor advice-ref="transactionAdvice" pointcut="execution(* *..*ServiceImpl.upgrade*(..)))" />
+	</aop:config>
+		
+	<!-- Spring이 제공하는 Advice 설정 ( AOP Bean관련 유일하게 직접 구현 클래스를 사용. ) -->
+	<bean id="transactionAdvice" class="springbook.user.service.TransactionAdvice">
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>	
+	
+	<!-- 자동 프록시 생성기 등록  
+	    bean으로 등록된 advisor를 이용해서 proxy를 자동으로 생성하는 기능.
 	     즉, bean id="transactionAdvisor" 를 찾아온다.
-	-->
+	
 	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" />
 	
-	<!-- Spring이 제공하는 Advisor 설정 -->
+	 Spring이 제공하는 Advisor 설정
 	<bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
 		<property name="advice" ref="transactionAdvice" />
 		<property name="pointcut" ref="transactionPointcut" />
 	</bean>
-		
-	<!-- Spring이 제공하는 Advice 설정 -->
-	<bean id="transactionAdvice" class="springbook.user.service.TransactionAdvice">
-		<property name="transactionManager" ref="transactionManager" />
-	</bean>
-	
-	<!-- 자동 프록시 포인트컷 설정
-	     aspectJ이용에 따라 NameMatchClassMethodPointcut.java도 삭제해도 무관.
-	<bean id="transactionPointcut" class="springbook.user.service.NameMatchClassMethodPointcut">
-		<property name="mappedClassName" value="*ServiceImpl" />
-		<property name="mappedName" value="upgrade*" />
-	</bean>-->
-	
 	
 	 <bean id="transactionPointcut" class="org.springframework.aop.aspectj.AspectJExpressionPointcut">
 	 	<property name="expression" value="execution(* *..*ServiceImpl.upgrade*(..)))" />
 	 </bean>
+	-->
      
     <!-- 자동프록시 테스트 빈 등록 
 		스태틱멤버클래스는 $로 지정한다.
 		parent : 프로퍼티 정의를 포함해서 userService빈의 설정을 상속받는다.    	
     -->
-    <bean id="testUserService" class="springbook.user.test.UserServiceTest$TestUserServiceImpl" parent="userService" />
-	    
+    <bean id="testUserService" class="springbook.user.test.UserServiceTest$TestUserService" parent="userService" />
+	
+	
      		
 </beans>

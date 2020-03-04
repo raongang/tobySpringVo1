@@ -27,6 +27,7 @@ import springbook.user.service.UserServiceImpl;
  *   데이터 update중에 에러가 발생했을때, 이전 데이터는 roll-back이 되는지, 그대로 commit이 되는지 
  *   확인하기 위한 테스트 
 */
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="/applicationContext.xml")
 public class UserServiceTest {
@@ -77,12 +78,11 @@ public class UserServiceTest {
 	
 	/**  테스트를 위한 UserService 대역 생성 
 	 *         ※  보통 오버라이딩을 하기 위해 class파일을 별도로 만들어서 상속하는데 테스트용이라면 다음과 같이 inner class중의 한
-	 *     종류인 nested class를 이용하면 편함. 
-	 *        
+	 *     종류인 nested class를 이용하면 편함.         
 	 */
 	
 	//포인트컷의 클래스필터에 선정되도록 이름 변경
-	static class TestUserServiceImpl extends UserServiceImpl{
+	static class TestUserService extends UserServiceImpl{
 		private String id = "madnite1"; //테스트 픽스처의 user(3)의 id값 고정.
 	
 		//UserService의 메소드 오버라이딩
@@ -94,17 +94,19 @@ public class UserServiceTest {
 		}
 	}
 	
+	
 	static class TestUserServiceException extends RuntimeException{ }
 	//upgraded - 어떤 레벨로 바뀔 것인가가 아니라, 다음 레벨로 업그레이드 될것인가 아닌가를 지정.
 	private void checkLevelUpgrade(User user, boolean upgraded) {
 		User userUpdate = userDao.get(user.getId());
-		
+
 		if(upgraded) { //업데이트 일어났는지 확인
 			assertThat(userUpdate.getUserLevel(),is(user.getUserLevel().nextLevel()));
 		}else { //업데이트가 일어나지 않았는지 확인
 			assertThat(userUpdate.getUserLevel(),is(user.getUserLevel()));
 		}
 	}//end checkLevelUpgrade
+	
 	
 	//자동생성된 프록시 확인
 	@Test
