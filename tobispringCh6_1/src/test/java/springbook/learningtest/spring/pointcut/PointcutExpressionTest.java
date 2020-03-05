@@ -46,10 +46,6 @@ public class PointcutExpressionTest {
 	}
 	
 	
-	
-	
-	
-	
 	public void targetClassPointcutMatches(String expression,boolean...expected) throws Exception{
 		pointcutMatches(expression, expected[0], Target.class, "hello");
 		pointcutMatches(expression, expected[1], Target.class, "hello",  String.class);
