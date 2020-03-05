@@ -41,6 +41,8 @@ public class UserServiceTest {
 	@Autowired
 	UserService testUserService;
 	
+	@Autowired ApplicationContext context;
+	
 	public static final int MIN_LOGCOUNT_FOR_SILVER = 50;
 	public static final int MIN_RECOMMEND_FOR_GOLD = 30;
 	
@@ -58,7 +60,7 @@ public class UserServiceTest {
 			new User ("green", "박범진", "p1", UserLevel.GOLD, 100, Integer.MAX_VALUE,"sayllclubs.naver.com")
 		);
 	}
-	
+	/*
 	@Test
 	public void upgradeAllOrNothing() throws Exception {
 		userDao.deleteAll();
@@ -74,6 +76,12 @@ public class UserServiceTest {
 		}
 		//예외가 발생하기전에 레벨 변경이 있었던 사용자의 레벨이 처음 상태로 바뀌었나 체크함.
 		checkLevelUpgrade(users.get(1),false);
+	}*/
+	
+	
+	@Test
+	public void readOnlyTransactionAttribute() { 
+		testUserService.getAll(); //읽기를 시도했으니 실패해야 테스트 성공임. ?????????????? 왜 에러가 안나지?
 	}
 	
 	/**  테스트를 위한 UserService 대역 생성 
@@ -92,10 +100,23 @@ public class UserServiceTest {
 			if(user.getId().equals(this.id)) throw new TestUserServiceException();
 			super.upgradeLevel(user); 
 		}
+		
+
+		//읽기전용 트랜잭션의 대상인 get으로 시작하는 메소드를 오버라이드.
+		@Override
+		public List<User> getAll() {
+			// TODO Auto-generated method stub
+			System.out.println("여기");
+			
+			for(User user : super.getAll()) {
+				super.update(user); //강제로 쓰기시도. 여기서 읽기전용속성으로 인한 예외가 발생해야 한다.
+			}
+			return null;//메소드가 끝나기전에 예외가 발생해야 하니 리턴값은 의미없음.
+		}
 	}
 	
-	
 	static class TestUserServiceException extends RuntimeException{ }
+	
 	//upgraded - 어떤 레벨로 바뀔 것인가가 아니라, 다음 레벨로 업그레이드 될것인가 아닌가를 지정.
 	private void checkLevelUpgrade(User user, boolean upgraded) {
 		User userUpdate = userDao.get(user.getId());
@@ -109,10 +130,12 @@ public class UserServiceTest {
 	
 	
 	//자동생성된 프록시 확인
+	/*
 	@Test
 	public void advisorAutoProxyCreator() {
 		assertThat(testUserService,is(java.lang.reflect.Proxy.class)); //프록시로 변경된 오브젝트인지 확인.
 	}
+	*/
 }
 
 

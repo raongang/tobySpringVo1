@@ -34,7 +34,6 @@ public class UserServiceImpl implements UserService{
 			}
 		}
 	}
-
 	
 	//업그레이드 가능 확인 메소드
 	private boolean canUpgradeLevel(User user) {
@@ -49,7 +48,7 @@ public class UserServiceImpl implements UserService{
 	}
 	
 	//레벨 업그레이드 작업 메소드
-	//upgradeLevels 에 생성한 트랜잭션 정보는 트랜잭션 동기화 방법을 토애 userDao에서 알아서 활용한다.
+	//upgradeLevels 에 생성한 트랜잭션 정보는 트랜잭션 동기화 방법을 토애 userDao에서 알아서 활용한다.z
 	protected void upgradeLevel(User user) {
 		
 		System.out.println("UserServiceImpl upgradeLevel enter");
@@ -57,11 +56,18 @@ public class UserServiceImpl implements UserService{
 		userDao.update(user);
 	}
 	
+	
 	@Override
 	public void add(User user) {
-		// TODO Auto-generated method stub
+		if (user.getUserLevel() == null) user.setUserLevel(UserLevel.BASIC);
+		userDao.add(user);
 	}
 	
+	/** DAO로 위임하도록 만든다. 필요한 부가로직을 넣어도 된다. */
 	
+	public User get(String id) { return userDao.get(id); }
+	public List<User> getAll() { return userDao.getAll(); }
+	public void deleteAll() { userDao.deleteAll(); }
+	public void update(User user) { userDao.update(user); }
 	
 }//end UserService
