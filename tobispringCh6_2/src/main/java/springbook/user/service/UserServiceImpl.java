@@ -56,7 +56,6 @@ public class UserServiceImpl implements UserService{
 		userDao.update(user);
 	}
 	
-	
 	@Override
 	public void add(User user) {
 		if (user.getUserLevel() == null) user.setUserLevel(UserLevel.BASIC);

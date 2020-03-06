@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.dao.TransientDataAccessResourceException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -27,7 +28,6 @@ import springbook.user.service.UserServiceImpl;
  *   데이터 update중에 에러가 발생했을때, 이전 데이터는 roll-back이 되는지, 그대로 commit이 되는지 
  *   확인하기 위한 테스트 
 */
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="/applicationContext.xml")
 public class UserServiceTest {
@@ -40,8 +40,6 @@ public class UserServiceTest {
 	/* 같은 타입의 빈이 2개이므로, 필드이름을 기준으로 주입될 빈이 결정된다. 자동 프록시 생성기에 의해 트랜잭션 부가기능이 testUserService 빈에 적용되었는지를 확인하기 위함.*/
 	@Autowired
 	UserService testUserService;
-	
-	@Autowired ApplicationContext context;
 	
 	public static final int MIN_LOGCOUNT_FOR_SILVER = 50;
 	public static final int MIN_RECOMMEND_FOR_GOLD = 30;
@@ -59,8 +57,8 @@ public class UserServiceTest {
 			new User ("madnite1", "박범진", "p1", UserLevel.SILVER, 60, MIN_RECOMMEND_FOR_GOLD,"sayllclubs.naver.com"),
 			new User ("green", "박범진", "p1", UserLevel.GOLD, 100, Integer.MAX_VALUE,"sayllclubs.naver.com")
 		);
-	}
-	/*
+	}//end setup
+	
 	@Test
 	public void upgradeAllOrNothing() throws Exception {
 		userDao.deleteAll();
@@ -76,12 +74,16 @@ public class UserServiceTest {
 		}
 		//예외가 발생하기전에 레벨 변경이 있었던 사용자의 레벨이 처음 상태로 바뀌었나 체크함.
 		checkLevelUpgrade(users.get(1),false);
-	}*/
+		
+		
+	}//end test upgradeAllOrNothing
 	
+	static class TestUserServiceException extends RuntimeException{ }
 	
-	@Test
-	public void readOnlyTransactionAttribute() { 
-		testUserService.getAll(); //읽기를 시도했으니 실패해야 테스트 성공임. ?????????????? 왜 에러가 안나지?
+	/**The read-only behaviour is strictly driver specific. Oracle driver ignores this flag entirely */
+	@Test(expected=TransientDataAccessResourceException.class)
+	public void readOnlyTransactionAttribute() {
+		testUserService.getAll();
 	}
 	
 	/**  테스트를 위한 UserService 대역 생성 
@@ -101,21 +103,16 @@ public class UserServiceTest {
 			super.upgradeLevel(user); 
 		}
 		
-
 		//읽기전용 트랜잭션의 대상인 get으로 시작하는 메소드를 오버라이드.
 		@Override
 		public List<User> getAll() {
 			// TODO Auto-generated method stub
-			System.out.println("여기");
-			
 			for(User user : super.getAll()) {
 				super.update(user); //강제로 쓰기시도. 여기서 읽기전용속성으로 인한 예외가 발생해야 한다.
 			}
 			return null;//메소드가 끝나기전에 예외가 발생해야 하니 리턴값은 의미없음.
 		}
-	}
-	
-	static class TestUserServiceException extends RuntimeException{ }
+	}//end TestUserService
 	
 	//upgraded - 어떤 레벨로 바뀔 것인가가 아니라, 다음 레벨로 업그레이드 될것인가 아닌가를 지정.
 	private void checkLevelUpgrade(User user, boolean upgraded) {
@@ -128,15 +125,12 @@ public class UserServiceTest {
 		}
 	}//end checkLevelUpgrade
 	
-	
 	//자동생성된 프록시 확인
-	/*
 	@Test
 	public void advisorAutoProxyCreator() {
 		assertThat(testUserService,is(java.lang.reflect.Proxy.class)); //프록시로 변경된 오브젝트인지 확인.
 	}
-	*/
-}
+}//end UserServiceTest
 
 
 
