@@ -1,0 +1,20 @@
+● 트랜잭션 애노테이션(@Transactional)의 등장
+ 	<aop:config>
+		<aop:advisor advice-ref="transactionAdvice" pointcut="bean(*Service)" />
+	</aop:config>
+	
+	
+	<tx:advice id="transactionAdvice">
+	<tx:attributes>
+			<tx:method name="get*" read-only="true"/>
+			<tx:method name="*" />
+		</tx:attributes> 
+	</tx:advice>
+	   
+ - 위와 같은 aop와 advisor를 이용한 방식은 트랜잭션을 일괄적으로 적용할 수 있다.
+ - 가끔 클래스나 메소드에 따라 제각각 속성이 다른, 세밀하게 튜닝된 트랜잭션 속성을 적용할때는 일일이 포인트컷과 advice를 
+   추가해야 하기 때문에 복잡해진다.
+ - 이를 해결하기 위해 직접 타켓에 트랜잭션 속성정보를 가진 애노테이션을 지정하기 위해 @Transactional이 등장.
+ - @Transactional 사용시 스프링은 모든 오브젝트를 자동으로 타켓오브젝트로 인식한다.
+ - class,interface,method에 사용할 수 있다. (서칭방법은 4단계의 대체정책을 이용)
+      ㄴ <tx:annotation-drvien /> 설정으로 해결.
