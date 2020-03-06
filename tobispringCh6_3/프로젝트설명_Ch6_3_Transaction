@@ -1,3 +1,94 @@
+	
+TransactionDefinition interface
+  ㄴ  DefaultTransactionDefinition
+  
+ 
+ ● DefaultTransactionDefinition의 정체
+ 
+  - 사용예 :  TransactionStatus status = this.transactionManager.getTransaction(new DefaultTransactionDefinition());
+  - TransactionDefinition interface를 구현하며, 트랜잭션의 동작방식에 영향을 줄 수 있는 4가지 속성을 정의하고 있다.
+  
+ 
+ ● 동작방식 4가지 속성
+  1. 전파(transaction propagation)
+    - 트랜잭션의 경계에서 이미 진행중인 트랜잭션이 있을 때 또는 없을 때 어떻게 동작할 것인가를 결정하는 방식.
+    - 독작적인 트랜잭션 경계를 가진 코드에 대해 이미 진행중인 트랜잭션이 어떻게 영향을 미칠수 있는가를 정의하는 것. 
+    
+  1-2. 전파속성
+    ■ PROPAGATION_REQUIRED
+      - 가장 많이 사용
+      - 진행중인 트랜잭션이 없으면 새로 시작하고, 이미 시작된 트랜잭션이 있으면 이에 참여.
+      - 위에서 사용한 DefaultTransactionDefinition이 PROPAGATION_REQUIRED임.
+      
+    ■ PROPAGATION_REQUIRES_NEW
+      - 항상 새로운 트랜잭션을 시작. 독립적인 트랜잭션이 보장
+      
+    ■ PROPAGATION_NOT_SUPPORTED
+      - 트랜잭션없이 동작하도록 만들수도 있음.
+      - 진행중인 트랜잭션이 있어도 무시.
+      - 트랜잭션 경계설정은 보통 AOP를 이용해서 한번에 많은 메소드에 동시에 적용하는게 보편적.
+        그 중 특별한 메소드만 제외를 할려면 point cut을 이용해도 되지만, 복잡해질수도 있기 때문에 속성으로 제공.
+        
+   2. 격리수준,독립성(isolation)
+     - 서버환경에서는 여러개의 트랜잭션이 동시에 진행될 수 있다.
+     - 기본적으로 DB에 설정되어 이씨만 jdbc들아ㅣ버나 DataSource등에서 재 설정할 수 있고, 필요하다면 
+       트랜잭션 단위로 격리수준을 조정 할 수 있다.
+     - DefaultTransactionDefinition에 설정된 격리수준 ISOLATION_DEFAULT
+     - ISOLATION_DEFAULT : DataSource에 설정되어 있는 디폴트 격리수준을 따름.
+     - 기본적으로는 DB나 dataSource에 설정된 디폴트 격리수준을 따르는 편이 좋지만, 특별한 작업을 수행하는 메소드의 경우 독자적인 격리수준을 지정할 필요도 있다.
+     
+   
+   3. 제한시간,타임아웃(timeout)
+     - 트랜잭션을 수행하는 제한 시간을 설정할 수 있음.
+     - DefaultTransactionDefinition 의 기본설정은 제한시간이 x
+     - PROPAGATION_REQUIRED, PROPAGATION_REQUIRES_NEW 와 함께 사용해야 의미가 있음.
+     
+     
+   4. 읽기전용(read-only status)
+      - 트랜잭션 내에서 데이터를 조작하는 시도를 막음.
+      - 트랜잭션의 정의 수정시 TransactionDefinition 오브젝트를 생성하고 사용하는 곳에 외부에서 정의된 TransactionDefinition 오브젝트를 di
+    4-1. 문제점
+       - di를 하게 될 경우 TransactionAdvice.java를 사용하는 모든 트랜잭션의 속성이 한꺼번에 변경됨
+       
+       
+●  트랜잭션 인터셉터와 트랜잭션 속성
+  - 메소드별로 다른 트랜잭션 정의를 적용할려면 advice의 기능을 확장해야 함.
+   
+  1. TransactionInterceptor
+    - 4-1의 문제점을 해결하기 위해 나옴. 즉  TransacionAdvice의 속성을 원하는 메소드를 선택해서 독자적인 트랜잭션 정의를 하기 위함.
+    - 동작방식은 TransactionAdvice.java와 다르지 않지만, 트랜잭션 정의를 메소드 이름 패턴을 이용해서 다르게 지정할수 있는 방법을 추가로 제공
+    - TransactionInterceptor 의 프로퍼티 : PlatformTransactionManager, Properties
+    
+    1-1. Properties 타입의 프로퍼티 이름 
+        - transactionAttributes(Interface)로 트랜잭션 속성을 정의한 프로퍼티
+        - TransactionDefinition의 4가지 속성에 rollbackOn()을 가지고 있는 transactionAttributes interface로 정의.
+        - rollbackOn() : 예외발생시 롤백여부 결정하는 메소드
+        - transactionAttributes를 이용해서 트랜잭션의 부가기능의 동작방식을 모두 제어 가능.
+    
+    1-2. transactionAttributes
+       - Properties 라는 일종의 맵 타입 오브젝트로 받는다.
+       - 컬렉션이용하는 이유는 메소드 패턴에 따라 각기 다른 트랜잭션 속성을 부여하기 위함
+       
+
+●  메소드이름 패턴을 이용한 트랜잭션 속성 지정
+
+PROPAGATION_NAME ( 필수)
+ISOLATION_NAME (생략가능,생략시 디폴트)
+readOnly(생략가능,디폴트 읽기전용아님)
+timeout_NNNN(생략가능)
+-Exception1(체크예외중에 rollback 대상으로 추가할 것을 넣는다. 한개 이상 등록가능)
++Exception2(런타임예외지만 롤백하지 않는 예외들을 넣음)
+
+● tx네임스페이스를 이용한 설정 방법
+ - TransactionInterceptor 타입의 advice 빈과 transactionAttributes 타입의 속성 정보도 tx스키마 전용 태그를 이용해 정의 가능.
+ 
+● 포인트컷과 트랜잭션 속성의 적용 전략
+ - 트랜잭션 부가기능(advice)을 적용할 후보 메소드를 선정하는 작업은 포인트 컷
+ - advice의 트랜잭션 전파 속성에 따라서 메소드별로 트랜잭션의 적용 방식을 결정.
+ - 트랜잭션용 포인트 컷 표현식에는 메소드나 파라미터, 예외에 대한 패턴을 정의하지 않는게 바람직.
+ - 프록시 방식 AOP는 같은 타킷오브젝트 내의 메소드를 호출할때는 적용되지 않는다.
+  
+    
 ● 트랜잭션 애노테이션(@Transactional)의 등장
  	<aop:config>
 		<aop:advisor advice-ref="transactionAdvice" pointcut="bean(*Service)" />
@@ -18,3 +109,6 @@
  - @Transactional 사용시 스프링은 모든 오브젝트를 자동으로 타켓오브젝트로 인식한다.
  - class,interface,method에 사용할 수 있다. (서칭방법은 4단계의 대체정책을 이용)
       ㄴ <tx:annotation-drvien /> 설정으로 해결.
+      
+ 
+	

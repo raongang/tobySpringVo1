@@ -20,53 +20,13 @@
 		<property name="username" value="tobi" />
 		<property name="password" value="spring" />
 	</bean>
-	
-	<!-- global transaction 추상화 
-		interface PlatformTransactionManager
-		  ㄴ abstract AbstractPlatformTransactionManager
-     		 ㄴ class DataSourceTransactionManager
-	 -->
+
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 
-	<!-- aop namespace를 이용한 선언
-	    아래 나누어진 부분이 aop namespace를 이용하여 편하게 정리됨.
-	    aop:config -> aop 설정을 담는 부모 태크. 필요에 따라 AspectJAdvisorAutoProxyCreate를 빈으로 등록해준다.
-	-->
-	<aop:config>
-		<aop:advisor advice-ref="transactionAdvice" pointcut="bean(*Service)" />
-	</aop:config>
+	<tx:annotation-driven transaction-manager="transactionManager"/>
 	
-	<!-- tx스키마를 이용해서 transactionInterceptor와 transactionAttributes속성을 정의. (명시적 트랜잭션)
-		 tx:advice 태그에 의해 TransactionInterceptor 빈이 등록됨.
-		 transaction-manager의 bean 아이디가 transactionManager라면 생략가능.
-		 propagation="REQUIRED" : default값이 스키마에 정의되어 있으므로 생략가능.
-	-->		
-	<tx:advice id="transactionAdvice">
-		<tx:attributes>
-			<tx:method name="get*" read-only="true"/>
-			<tx:method name="*" />
-		</tx:attributes> 
-	</tx:advice>
-
-	<!-- 메소드이름 패턴을 이용한 트랜잭션 속성(transactionAttributes) 정의 예  
-		TransactionAdvice.java의 기능을 확장한 예로 TransactionAdvice.java파일은 더 이상 사용하지 않음.
-		 메소드별로 다른 트랜잭션 정의를 적용할려면 advice의 기능을 확장해야 함.
-		 ISOLATION_SERIALIZABLE : 최고수준의 격리
-		 만약 메소드이름이 하나 이상의 패턴과 일치할 경우 가장 정확히 일치하는 것이 적용된다.
-	
-	<bean id="transactionAdvice" class="org.springframework.transaction.interceptor.TransactionInterceptor">
-		<property name="transactionManager" ref="transactionManager" />
-		<property name="transactionAttributes">
-			<props>
-				<prop key="get*">PROPAGATION_REQUIRED,readOnly</prop>
-				<prop key="*">PROPAGATION_REQUIRED</prop>
-			</props>
-		</property>
-	</bean>
-	-->
-		
 	<!--  application components -->
 	<bean id="userDao" class="springbook.user.dao.UserDaoImpl">
 		<property name="jdbcTemplate" ref="dataSource" />
