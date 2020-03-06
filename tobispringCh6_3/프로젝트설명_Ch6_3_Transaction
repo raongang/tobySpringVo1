@@ -110,5 +110,9 @@ timeout_NNNN(생략가능)
  - class,interface,method에 사용할 수 있다. (서칭방법은 4단계의 대체정책을 이용)
       ㄴ <tx:annotation-drvien /> 설정으로 해결.
       
- 
+ ● 트랜잭션의 종류
+   1. 선언적 트랜잭션(declarative transaction , 권장)
+     - aop를 이용해 코드 외부에서 트랜잭션의 기능을 부여해주고 속성을 지정 할 수 있게 하는 방법. 
+   2. 프로그램에 의한 트랜잭션(programmatic transaction)
+     - TransactionTemplate이나 개별 데이터 기술의 트랜잭션 API를 사용해 직접 코드 안에서 사용하는 방법.
 	
