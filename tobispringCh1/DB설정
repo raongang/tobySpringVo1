@@ -12,8 +12,12 @@ alter user tobi quota unlimited on users;
 create table users(
 	id varchar(10) primary key,
 	name varchar(20) not null,
-	password varchar(10) not null
+	password varchar(10) not null,
+	emailAddress varchar(30)
 );
 
 select * from users;
+
+
+
 
