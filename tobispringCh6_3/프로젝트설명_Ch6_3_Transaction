@@ -94,7 +94,6 @@ timeout_NNNN(생략가능)
 		<aop:advisor advice-ref="transactionAdvice" pointcut="bean(*Service)" />
 	</aop:config>
 	
-	
 	<tx:advice id="transactionAdvice">
 	<tx:attributes>
 			<tx:method name="get*" read-only="true"/>
@@ -112,7 +111,23 @@ timeout_NNNN(생략가능)
       
  ● 트랜잭션의 종류
    1. 선언적 트랜잭션(declarative transaction , 권장)
-     - aop를 이용해 코드 외부에서 트랜잭션의 기능을 부여해주고 속성을 지정 할 수 있게 하는 방법. 
-   2. 프로그램에 의한 트랜잭션(programmatic transaction)
+     - aop를 이용해 코드 외부에서 트랜잭션의 기능을 부여해주고 속성을 지정 할 수 있게 하는 방법.
+     - Bean정의 파일 또는 Annotation 으로 정의하면 스프링이 자동으로 proxy를 생성해 처리함.
+   2. 프로그램에 의한 트랜잭션(programmatic transaction) - 명시적 트랜잭션
      - TransactionTemplate이나 개별 데이터 기술의 트랜잭션 API를 사용해 직접 코드 안에서 사용하는 방법.
-	
+     - TrnasactionManager의 API를 application에서 직접 호출하여 처리.
+  
+ ● 트랜잭션 추상화의 핵심기술
+   - 트랜잭션 매니저와 트랜잭션 동기화
+   - PlatformTransactionManager Interface를 구현한 트랜잭션 매니저를 통해 구체적인 트랜잭션 기술의 종류에 상관없이 일괄된 트랜잭션 제어 가능.
+   - 트랜잭션 동기화 기술로 인해 트랜잭션 정보를 저장소에 보관했다가 DAO에서 공유 가능.
+   
+ ● 테스트를 위한 트랜잭션 애노테이션 
+   - @Transactional
+   - @Rollback
+   - @TransactionConfiguration
+   - @Transactional(propagation=Propagation.NEVER)
+   - @NotTransactional
+   
+   
+     

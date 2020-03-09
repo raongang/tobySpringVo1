@@ -12,7 +12,6 @@
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
 		
-		
 	<!-- DataSource 설정 -->
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
 		<property name="driverClass" value="oracle.jdbc.driver.OracleDriver" />
@@ -21,11 +20,11 @@
 		<property name="password" value="spring" />
 	</bean>
 
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+	
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
-
-	<tx:annotation-driven transaction-manager="transactionManager"/>
 	
 	<!--  application components -->
 	<bean id="userDao" class="springbook.user.dao.UserDaoImpl">
