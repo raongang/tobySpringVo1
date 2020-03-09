@@ -43,7 +43,6 @@ public class PointcutExpressionTest {
 		targetClassPointcutMatches("execution(* hello(..))",true,true,true,true,true,true);
 	}
 	
-	
 	public void targetClassPointcutMatches(String expression,boolean...expected) throws Exception{
 		pointcutMatches(expression, expected[0], Target.class, "hello");
 		pointcutMatches(expression, expected[1], Target.class, "hello",  String.class);
@@ -53,7 +52,6 @@ public class PointcutExpressionTest {
 		//pointcutMatches(expression, expected[5], Bean.class,   "method");
 	}
 	
-	
 	//포인트컷과 메소드를 비교해주는 테스트 헬퍼 메소드
 	public void pointcutMatches(String expression, Boolean expected, Class<?>clazz, String methodName, Class<?>...args) throws Exception{
 		AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
@@ -61,6 +59,7 @@ public class PointcutExpressionTest {
 		assertThat(pointcut.getClassFilter().matches(clazz) &&
 					pointcut.getMethodMatcher().matches(clazz.getMethod(methodName, args),null),is(expected));
 	}
+	
 	
 	
 }

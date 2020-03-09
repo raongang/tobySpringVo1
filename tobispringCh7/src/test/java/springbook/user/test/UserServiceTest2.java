@@ -69,32 +69,7 @@ public class UserServiceTest2 {
 			new User ("green", "박범진", "p1", UserLevel.GOLD, 100, Integer.MAX_VALUE,"sayllclubs.naver.com")
 		);
 	}//end setup
-	
-	/* 
-	@Test
-	public void transactionSyncRollback() {
-		userDao.deleteAll();
-		assertThat(userDao.getCount(),is(0));
-		DefaultTransactionDefinition txDefinition = new DefaultTransactionDefinition(); //기본트랜잭션 정의사용.
-		TransactionStatus txStatus = transactionManager.getTransaction(txDefinition); 
-		
-		userService.add(users.get(0));
-		userService.add(users.get(1));
-		
-		선언적 트랜잭션은 service에만 국한되는게 아니라서, JdbcTemplate와 같이 스프링이 제공하는 데이터 엑세스 추상화를 적용한 DAO도 동일하게 영향미침.
-		   <bean id="userDao" class="springbook.user.dao.UserDaoImpl">
-		    <property name="jdbcTemplate" ref="dataSource" />
-	       </bean>
-	       위의 선언이 있으므로, JdbcTemplate는 트랜잭션이 시작한게 있다면, 해당 트랜잭션에 참여하고 없으면 자동커밋모드로 JDBC작업 수행
-		
-		
-		assertThat(userDao.getCount(),is(2));
-		
-		transactionManager.rollback(txStatus);
-		assertThat(userDao.getCount(),is(0));
-	}*/
-	
-	
+
 	/*
 	 *   테스트를 위한 트랜잭션 애노테이션
 	 *     1.  transactionSyncRollback 처럼 명시적으로 트랜잭션을 만들어서 쓸수도 있지만 Annotation을 이용한 선언적 트랜잭션도 사용가능
@@ -122,11 +97,11 @@ public class UserServiceTest2 {
 	public void trnasactionSyncAnnotation() {
 		userService.deleteAll();
 		assertThat(userDao.getCount(),is(0));
-		
 		userService.add(users.get(0));
 		userService.add(users.get(1));
-
 	}
+
+	
 	
 	
 }//end UserServiceTest
