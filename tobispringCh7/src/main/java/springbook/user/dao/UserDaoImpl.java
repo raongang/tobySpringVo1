@@ -3,6 +3,7 @@ package springbook.user.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -17,25 +18,6 @@ import springbook.user.domain.User.UserLevel;
  */
 
 public class UserDaoImpl implements UserDao{
-
-	// 인터페이스 도입으로 인해 UserDao는 자신이 사용할 클래스가 어떤 건지 몰라도 됨. 인터페이스를 통해 원하는 기능을 사용하기만 하면
-	// 된다.
-	/**
-	 * 1.6.2 싱글톤과 오브젝트 상태 
-	 * 
-	 * 0) 스프링 빈으로 선언시 싱글톤이 된다.
-	 * 
-	 * 1) 멀티 스레드 환경에서 기본적으로 인스턴스 필드 값을 변경하고 유지하는
-	 * 상태유지(stateful)방식으로 만들지 않는다. 
-	 * 
-	 * 2) 아래와 같이 선언하면 멀티스레드 환경에서 매번 새로운 값으로 바뀌기 때문에 심각한
-	 * 문제가 발생 - 파라미터와 로컬변수, 리턴값을 이용하면 새로운 값을 저장할 독립적인 공간이 만들어지기 때문에 싱글톤이라고 해도 여러
-	 * 스레드가 변수를 덮어쓰지 않음.
-	 * 
-	 * 싱글톤은 static으로 생성한다.
-	 * 
-	 * private Connection c; private User user;
-	 */
 
 	// RowMapper callback 오브젝트에는 상태정보가 없기 때문에, 멀티 쓰레드에서 문제가 되지 않는다.
 	private RowMapper<User> userMapper = new RowMapper<User>() {
@@ -52,11 +34,10 @@ public class UserDaoImpl implements UserDao{
 		}
 	};
 
+	private Map<String,String> sqlMap;
 	
-	private String sqlAdd;
-	
-	public void setSqlAdd(String sqlAdd) {
-		this.sqlAdd = sqlAdd;
+	public void setSqlMap(Map<String, String> sqlMap) {
+		this.sqlMap = sqlMap;
 	}
 
 	// spring이 제공하는 template
@@ -72,28 +53,6 @@ public class UserDaoImpl implements UserDao{
 	}
 
 	/**
-	 * 템플릿,콜백 패턴 - add 메소드 : Client - StatementStrategy : callback - jdbcContext.workWithStatementStrategy : template
-	 *   
-	 *  SQLException 예외처리 
-	 *   - Spring은 DB별 ERROR CODE를 분류해서 Spring이 정의한 예외클래스와 매핑 해 놓은 에러 코드 매핑정보 테이블을 만들어두고 이를 이용.
-	 
-	public void add(final User user) throws DuplicateUserIdException  {
-		try {
-			this.jdbcTemplate.update("insert into users(id,name,password) values(?,?,?)", user.getId(), user.getName(), user.getPassword());
-		}catch(DuplicateKeyException e) {
-			throw new DuplicateUserIdException(e); //예외를 전환시에는 원인이 되는 예외를 중첩하는 것이 좋다.
-		}
-		
-		//try {
-		//	//JDBC를 이용해서 USER정보를 db에 추가하는 코드 또는 그런 기능이 있는 다른 SQLException을 던지는 메소드를 호출하는 코드
-		//}catch(SQLException e) {
-		//	if(e.getErrorCode()==MysqlErrorNumbers.ER_DUP_ENTRY) throw new DuplicateUserIdException(e); //예외전환
-		//	throw new RuntimeException(); //예외 포장.
-		//}
-	}// end add
-	*/
-
-	/**
 	 * 템플릿,콜백 패턴 - add 메소드 : Client - StatementStrategys:  callback - jdbcContext.workWithStatementStrategy : template
 	 *   
 	 *  SQLException 예외처리 
@@ -101,7 +60,7 @@ public class UserDaoImpl implements UserDao{
 	 */
 	public void add(final User user) {
 		//this.jdbcTemplate.update("insert into users(id,name,password,userLevel,login,recommend, emailAddress) values(?,?,?,?,?,?,?)", user.getId(), user.getName(), user.getPassword(),user.getUserLevel().initValue(),user.getLogin(),user.getRecommend(), user.getEmailAddress());
-		this.jdbcTemplate.update(this.sqlAdd
+		this.jdbcTemplate.update(this.sqlMap.get("add")
 				, user.getId(), user.getName(), user.getPassword(),user.getUserLevel().initValue(),user.getLogin(),
 				user.getRecommend(), user.getEmailAddress());
 	}
@@ -141,6 +100,5 @@ public class UserDaoImpl implements UserDao{
 		this.jdbcTemplate.update("update users set name=?,password=?,userLevel=?,login=?, recommend=? , emailAddress=? where id=?", 
 				user.getName(),user.getPassword(),user.getUserLevel().initValue(),user.getLogin(),user.getRecommend(),user.getEmailAddress(),user.getId());
 	}
-
 	
 }// end class

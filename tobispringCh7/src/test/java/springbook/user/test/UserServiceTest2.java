@@ -74,8 +74,6 @@ public class UserServiceTest2 {
 			new User ("green", "박범진", "p1", UserLevel.GOLD, 100, Integer.MAX_VALUE,"sayllclubs.naver.com")
 		);
 	}//end setup
-
-
 	
 	@Test
 	//@Transactional(readOnly=true)
@@ -87,8 +85,6 @@ public class UserServiceTest2 {
 		userService.add(users.get(0));
 		userService.add(users.get(1));
 	}
-
-	
 	
 	
 }//end UserServiceTest

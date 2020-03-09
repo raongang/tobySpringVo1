@@ -29,7 +29,14 @@
 	<!--  application components -->
 	<bean id="userDao" class="springbook.user.dao.UserDaoImpl">
 		<property name="jdbcTemplate" ref="dataSource" />
-		<property name="sqlAdd" value="insert into users(id,name,password,userLevel,login,recommend, emailAddress) values(?,?,?,?,?,?,?)" />
+		
+		<!-- spring의 map태그이용. -->
+		<property name="sqlMap">
+			<map>
+				<entry key="add" value="insert into users(id,name,password,userLevel,login,recommend, emailAddress) values(?,?,?,?,?,?,?)" />
+			</map>
+		</property>
+		
 	</bean>
 
 	<bean id="userService" class="springbook.user.service.UserServiceImpl">

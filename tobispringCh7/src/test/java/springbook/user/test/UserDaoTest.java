@@ -87,8 +87,6 @@ public class UserDaoTest {
 		assertThat(userget2.getPassword(),is(users.get(1).getPassword()));		
 	}	
 	
-	
-	
 	//getId()가 없을때 예외처리 - 스프링에 정의된 Data Access Exception Class를 이용.
 	@Test(expected=EmptyResultDataAccessException.class)   //테스트중에 발생할 것으로 기대하는 예외 클래스를 지정
 	public void getUserFailure() throws SQLException, ClassNotFoundException{
@@ -97,7 +95,6 @@ public class UserDaoTest {
 		assertThat(userDao.getCount(),is(0));
 		userDao.get("unknown_id"); //강제 예외 발생
 	}
-	
 	
 	
 }//end UserDaoTest
