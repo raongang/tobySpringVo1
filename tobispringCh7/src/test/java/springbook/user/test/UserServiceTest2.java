@@ -3,6 +3,7 @@ package springbook.user.test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -52,6 +53,10 @@ public class UserServiceTest2 {
 	@Autowired 
 	UserService userService;
 	
+	@Autowired
+	private UserDao dao;
+	
+	
 	public static final int MIN_LOGCOUNT_FOR_SILVER = 50;
 	public static final int MIN_RECOMMEND_FOR_GOLD = 30;
 	
@@ -70,25 +75,7 @@ public class UserServiceTest2 {
 		);
 	}//end setup
 
-	/*
-	 *   테스트를 위한 트랜잭션 애노테이션
-	 *     1.  transactionSyncRollback 처럼 명시적으로 트랜잭션을 만들어서 쓸수도 있지만 Annotation을 이용한 선언적 트랜잭션도 사용가능
-	 *       - 테스트 메소드 실행전 새로운 트랜잭션을 만들어주고, 메소드가 종료되면 트랜잭션이 종료된다.
-	 *       - deleteAll, add는 메소드의 트랜잭션에 참여
-	 *     
-	 *     2. @Transactional
-	 *     - 테스트에 적용된 @Transactional은 기본적으로 트랜잭션을 강제 롤백하게 설정 되어 있음. 
-	 *     
-	 *     3. @Rollback ( 메소드레벨)
-	 *     - 모두 다 강제롤백하게 설정되어 있으므로, Rollback을 이용 설정가능
-	 *     - default값 : true
-	 *    
-	 *     4. @TransactionConfiguration 
-	 *       - 3번 @Rollback과 같은 기능이지만 클래스 레벨에 선언
-	 *       
-	 *     5. @NotTransactional( spring3.0에서 제거), @Transactional(propagation=Propagation.NEVER)
-	 *       -  @Transactional 설정을 무시하고, 트랜잭션을 시작하지 않음.
-	 */
+
 	
 	@Test
 	//@Transactional(readOnly=true)

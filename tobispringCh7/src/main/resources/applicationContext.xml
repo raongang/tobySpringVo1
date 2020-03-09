@@ -29,16 +29,11 @@
 	<!--  application components -->
 	<bean id="userDao" class="springbook.user.dao.UserDaoImpl">
 		<property name="jdbcTemplate" ref="dataSource" />
+		<property name="sqlAdd" value="insert into users(id,name,password,userLevel,login,recommend, emailAddress) values(?,?,?,?,?,?,?)" />
 	</bean>
 
 	<bean id="userService" class="springbook.user.service.UserServiceImpl">
 		<property name="userDao" ref="userDao" />
 	</bean>
      
-    <!-- 자동프록시 테스트 빈 등록 
-		스태틱멤버클래스는 $로 지정한다.
-		parent : 프로퍼티 정의를 포함해서 userService빈의 설정을 상속받는다.    	
-    -->
-    <bean id="testUserService" class="springbook.user.test.UserServiceTest$TestUserService" parent="userService" />
-     		
 </beans>
