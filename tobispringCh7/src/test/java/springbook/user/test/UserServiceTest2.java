@@ -121,14 +121,12 @@ public class UserServiceTest2 {
 	@Rollback //메소드에서 디폴트설정과 그밖의 롤백방법을 재 설정할수 있음( 우선순위 : 메소드 > 클래스 ) 
 	public void trnasactionSyncAnnotation() {
 		userService.deleteAll();
-		
 		assertThat(userDao.getCount(),is(0));
 		
 		userService.add(users.get(0));
 		userService.add(users.get(1));
+
 	}
-	
-	
 	
 	
 }//end UserServiceTest

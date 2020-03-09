@@ -37,8 +37,6 @@ public class PointcutExpressionTest {
 				pointcut.getMethodMatcher().matches(Target.class.getMethod("method"), null),is(false));
 	}*/
 	
-	
-	
 	@Test
 	public void pointcut() throws Exception{
 		//targetClassPointcutMatches("execution(* *(..))",true,true,true,true,true,true);
@@ -63,4 +61,6 @@ public class PointcutExpressionTest {
 		assertThat(pointcut.getClassFilter().matches(clazz) &&
 					pointcut.getMethodMatcher().matches(clazz.getMethod(methodName, args),null),is(expected));
 	}
+	
+	
 }
