@@ -3,7 +3,6 @@ package springbook.user.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -12,6 +11,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import springbook.user.domain.User;
 import springbook.user.domain.User.UserLevel;
+import springbook.user.sqlservice.SqlService;
 
 /**
  * DI(Dependency Injection) A ----> B A는 B에 의존한다. 즉, B의 내용이 바뀌면 A에도 영향을 미친다.
@@ -34,10 +34,10 @@ public class UserDaoImpl implements UserDao{
 		}
 	};
 
-	private Map<String,String> sqlMap;
-	
-	public void setSqlMap(Map<String, String> sqlMap) {
-		this.sqlMap = sqlMap;
+	private SqlService sqlService;
+
+	public void setSqlService(SqlService sqlService) {
+		this.sqlService = sqlService;
 	}
 
 	// spring이 제공하는 template
@@ -60,7 +60,7 @@ public class UserDaoImpl implements UserDao{
 	 */
 	public void add(final User user) {
 		//this.jdbcTemplate.update("insert into users(id,name,password,userLevel,login,recommend, emailAddress) values(?,?,?,?,?,?,?)", user.getId(), user.getName(), user.getPassword(),user.getUserLevel().initValue(),user.getLogin(),user.getRecommend(), user.getEmailAddress());
-		this.jdbcTemplate.update(this.sqlMap.get("add")
+		this.jdbcTemplate.update(this.sqlService.getSql("userAdd")
 				, user.getId(), user.getName(), user.getPassword(),user.getUserLevel().initValue(),user.getLogin(),
 				user.getRecommend(), user.getEmailAddress());
 	}
@@ -68,13 +68,13 @@ public class UserDaoImpl implements UserDao{
 	// queryForObject 의 조회결과가 없을 경우 예외처리가 자동으로 됨 / EmptyResultDataAccessException
 	public User get(String id) { // row 1번 조회
 		// sql에 바인딩할 파라미터 값, 가변인자 대신 배열이용
-		return this.jdbcTemplate.queryForObject("select * from users where id=?", new Object[] { id }, this.userMapper);
+		return this.jdbcTemplate.queryForObject(this.sqlService.getSql("userGet"), new Object[] { id }, this.userMapper);
 	}// end get
 	
 	/* jdbcTemplate 모든 SQLException을 Runtime Exception인 DataAccessException으로 포장하기 떄때문에 필요시 이를 catch해서 처리하면 되고, 그 외는 무시. */
 	public void deleteAll() {
 		// 내장콜백호출.
-		this.jdbcTemplate.update("delete from users");
+		this.jdbcTemplate.update(this.sqlService.getSql("userDeleteAll"));
 	}
 	
 	/** 
@@ -85,11 +85,11 @@ public class UserDaoImpl implements UserDao{
 	 */
 	
 	public List<User> getAll(){
-		return this.jdbcTemplate.query("SELECT * FROM USERS ORDER BY ID", this.userMapper);
+		return this.jdbcTemplate.query(this.sqlService.getSql("userGetAll"), this.userMapper);
 	}
 	
 	public int getCount(){
-		return this.jdbcTemplate.queryForObject("select count(*) from users", Integer.class);
+		return this.jdbcTemplate.queryForObject(this.sqlService.getSql("userGetCount"), Integer.class);
 	}// end getCount method
 	
 	/** update */
@@ -97,7 +97,7 @@ public class UserDaoImpl implements UserDao{
 	public void update(User user) {
 		System.out.println("user data : " + user.toString());
 		// TODO Auto-generated method stub
-		this.jdbcTemplate.update("update users set name=?,password=?,userLevel=?,login=?, recommend=? , emailAddress=? where id=?", 
+		this.jdbcTemplate.update(this.sqlService.getSql("userUpdate"), 
 				user.getName(),user.getPassword(),user.getUserLevel().initValue(),user.getLogin(),user.getRecommend(),user.getEmailAddress(),user.getId());
 	}
 	

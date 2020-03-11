@@ -52,6 +52,7 @@ public class UserDaoTest {
 	}//end setup
 
 
+	
 	@Test
 	public void addAndGet() throws SQLException, ClassNotFoundException{ //Jnit 테스트위해 접근제어자를 public으로..)
 		userDao.deleteAll();
@@ -95,7 +96,7 @@ public class UserDaoTest {
 		assertThat(userDao.getCount(),is(0));
 		userDao.get("unknown_id"); //강제 예외 발생
 	}
-	
+
 	
 }//end UserDaoTest
 

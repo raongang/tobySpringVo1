@@ -9,8 +9,6 @@ package com.raon.pattern.strategy;
  * Seller -> 전략
  * @author admin
  *
- *
- *
  *  전략패턴의 원칙 
  *    ㄴ 필요에 따라 컨텍스트 (context)는 그대로 유지가 유지하면서 (OCP 폐쇄원칙) 전략을 바꿔쓴다( OCP 개방원칙 ) 
  */

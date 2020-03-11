@@ -29,14 +29,20 @@
 	<!--  application components -->
 	<bean id="userDao" class="springbook.user.dao.UserDaoImpl">
 		<property name="jdbcTemplate" ref="dataSource" />
-		
-		<!-- spring의 map태그이용. -->
+		<property name="sqlService" ref="sqlService" />
+	</bean>
+	
+	<bean id="sqlService" class="springbook.user.sqlservice.SimpleSqlService">
 		<property name="sqlMap">
 			<map>
-				<entry key="add" value="insert into users(id,name,password,userLevel,login,recommend, emailAddress) values(?,?,?,?,?,?,?)" />
+				<entry key="userAdd" value="insert into users(id,name,password,userLevel,login,recommend, emailAddress) values(?,?,?,?,?,?,?)" />
+				<entry key="userGet" value="select * from users where id=?" />
+				<entry key="userDeleteAll" value="delete from users" />
+				<entry key="userGetAll" value="SELECT * FROM USERS ORDER BY ID" />
+				<entry key="userGetCount" value="select count(*) from users" />
+				<entry key="userUpdate" value="update users set name=?,password=?,userLevel=?,login=?, recommend=? , emailAddress=? where id=?" />
 			</map>
 		</property>
-		
 	</bean>
 
 	<bean id="userService" class="springbook.user.service.UserServiceImpl">
