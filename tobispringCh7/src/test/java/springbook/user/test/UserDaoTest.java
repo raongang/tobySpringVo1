@@ -22,6 +22,7 @@ import springbook.user.service.UserService;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
+//application context 생성과 동시에 XML파일을 읽어오고 초기화까지 수행한다. -> 이때 만들어지는 application Context가 GenericApplicationContext
 @ContextConfiguration(locations="/applicationContext.xml")
 public class UserDaoTest {
 
