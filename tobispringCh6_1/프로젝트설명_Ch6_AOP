@@ -63,6 +63,7 @@ AspectJ
  - porxy처럼 간접적인 방법이 아니라, target object를 뜯어고쳐서 부가기능을 직접 넣어주는 직접적인 방법을 이용.
  - compile된 target class 파일 자체를 수정하거나 클래스가 jvm에 로딩되는 시점을 가로채서 바이트코드를 조작함.
  
+ 
    
    
    
