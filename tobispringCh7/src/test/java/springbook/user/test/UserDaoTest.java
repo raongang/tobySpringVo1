@@ -97,7 +97,7 @@ public class UserDaoTest {
 		assertThat(userDao.getCount(),is(0));
 		userDao.get("unknown_id"); //강제 예외 발생
 	}
-
+	
 	
 }//end UserDaoTest
 
