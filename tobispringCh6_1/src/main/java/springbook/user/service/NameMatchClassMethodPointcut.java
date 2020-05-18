@@ -20,7 +20,6 @@ public class NameMatchClassMethodPointcut extends NameMatchMethodPointcut{
 			this.mappedName =  mappedName;
 		}
 		
-		
 		public boolean matches(Class<?> clazz) {
 			// TODO Auto-generated method stub
 			//와일드카드(*)가 들어간 문자열 비교를 지원하는 스프링의 유틸리티 메소드.

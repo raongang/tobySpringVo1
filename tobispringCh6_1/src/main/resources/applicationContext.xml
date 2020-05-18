@@ -30,6 +30,7 @@
 
 	<bean id="userService" class="springbook.user.service.UserServiceImpl">
 		<property name="userDao" ref="userDao" />
+		
 	</bean>
 	
 	
