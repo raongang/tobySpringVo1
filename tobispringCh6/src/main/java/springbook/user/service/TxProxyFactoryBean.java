@@ -6,7 +6,6 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 
 /**
-
  * FatoryBean
    - dynamic proxy, TransactionHandler 를 스프링 di 할 방법이 없음.
    - 스프링은 클래스 정보를 가지고 디폴트 생성자를 통해 오브젝트를 만드는 방법 외에도 빈을 만들수 있는 방법이 있음.

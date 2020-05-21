@@ -39,7 +39,7 @@ AOP용어
  5. Advisor 
   - point cut(메소드선정 알고리즘) + Adivce(부가기능) 
 
-
+									
 빈 후처리기를 이용한 자동프록시 생성
 
 1. dynamic proxy, TransactionHandler 를 스프링 di 할 방법이 없어서 ProxyFactoryBean 을 생성해서 이용한다.
